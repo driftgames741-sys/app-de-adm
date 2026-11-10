@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#110c08">
+<meta name="description" content="Painel de gestão da distribuidora: clientes, vendas, carga, boia, despesas e indicadores.">
+<title>Minha Distribuidora — Painel</title>
+<style>
+[hidden]{display:none!important}
+:root{
+  --bg:#110c08;
+  --sidebar:#0d0906;
+  --panel:#19120c;
+  --panel-alt:#211810;
+  --line:#2e2117;
+  --line-soft:#251a12;
+  --text:#f7f2ed;
+  --muted:#9a8878;
+  --accent:#ea6812;
+  --accent-soft:#2d190b;
+  --gold:#f5a623;
+  --gold-bg:#f5b82e;
+  --danger:#ef6461;
+  --ok:#3ec972;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--text);background:var(--bg);font-family:Inter,ui-rounded,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;flex:none;background:var(--sidebar);color:var(--text);padding:26px 16px 20px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-right:1px solid var(--line-soft)}
+.identity{font-size:18px;font-weight:800;letter-spacing:-.6px;display:flex;align-items:center;gap:11px;line-height:1.05;padding:0 10px}
+.identity-line{display:block;color:var(--gold)}
+.identity-mark{width:36px;height:36px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 6px 18px #ea681244}
+.identity-mark svg{width:20px;height:20px}
+.workspace-label{font-size:10px;color:#6e5d4f;letter-spacing:1.5px;font-weight:800;margin:34px 12px 12px}
+.side-nav{display:grid;gap:6px}
+.nav-item{border:0;background:transparent;color:#a89686;padding:12px 14px;border-radius:12px;text-align:left;display:flex;gap:12px;align-items:center;font-size:13px;font-weight:650;transition:background .2s,color .2s}
+.nav-item:hover{background:#ffffff08;color:#fff}
+.nav-item.active{background:var(--accent);color:#fff;font-weight:750;box-shadow:0 6px 20px #ea681238}
+.nav-icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.nav-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.side-bottom{margin-top:auto;width:100%;text-align:left;background:#16100b;border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;gap:11px;align-items:center;transition:border-color .2s,transform .15s}
+.side-bottom:hover{border-color:var(--accent);transform:translateY(-1px)}
+.local-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 10px var(--accent)}
+.local-dot.online{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.side-bottom strong,.side-bottom small{display:block}
+.side-bottom strong{font-size:12px;color:var(--text);font-weight:750}
+.side-bottom small{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+
+.main-column{min-width:0;flex:1}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:var(--bg);border-bottom:1px solid var(--line-soft)}
+.top-left{display:flex;align-items:center;gap:16px}
+.top-left strong{font-size:13px;font-weight:600;color:var(--muted)}
+.top-actions{display:flex;align-items:center;gap:10px}
+.status-pill{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:99px;padding:7px 14px;font-size:11px;font-weight:650;display:flex;align-items:center;gap:8px;transition:border-color .2s}
+.status-pill:hover{border-color:var(--accent)}
+.status-pill i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+.status-pill.online i{background:var(--ok)}
+.round-btn{width:32px;height:32px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);font-size:13px;font-weight:750}
+.round-btn:hover{border-color:var(--accent);color:var(--text)}
+
+.view{display:none;padding:24px 36px 80px;max-width:1600px;margin:auto}
+.view.active{display:block}
+
+.demo-banner{background:#1f150d;border:1px solid #452b15;border-radius:12px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:12px;color:#d8c7b8;margin-bottom:24px}
+.demo-banner strong{font-weight:800;color:var(--gold)}
+.text-button{border:0;background:none;color:var(--gold);text-decoration:underline;font-size:12px;font-weight:750;white-space:nowrap}
+
+.dash-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.dash-header h1,.section-bar h2{font-size:26px;font-weight:800;letter-spacing:-.7px;margin:0;color:var(--text)}
+.header-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+.period-tabs,.record-tabs,.report-filters{display:inline-flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px;overflow-x:auto;scrollbar-width:none}
+.period-tabs::-webkit-scrollbar,.record-tabs::-webkit-scrollbar,.report-filters::-webkit-scrollbar{display:none}
+.period-tabs button,.record-tabs button,.report-filters button{border:0;background:transparent;border-radius:99px;padding:6px 14px;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap}
+.period-tabs button.active,.record-tabs button.active,.report-filters button.active{background:var(--accent);color:#fff}
+
+.date-picker{display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:1px solid var(--line);border-radius:99px;background:var(--panel);color:var(--muted)}
+.date-picker span{font-size:9px;letter-spacing:1px;font-weight:800;white-space:nowrap}
+.date-picker input{border:0;background:transparent;color:var(--text);font-size:11px;font-weight:750;min-width:105px;outline:0;color-scheme:dark}
+.date-picker input::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.75;filter:invert(75%) sepia(35%) saturate(600%) hue-rotate(350deg)}
+
+.period-box{display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px;height:36px}
+.period-box button{width:26px;height:26px;border:0;border-radius:50%;background:var(--panel-alt);color:var(--muted);font-size:15px;line-height:1}
+.period-box button:hover{color:var(--text);background:var(--line)}
+.period-box span{font-size:11px;font-weight:700;min-width:118px;text-align:center;color:var(--text)}
+
+.quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
+.quick{border:1px solid var(--line);border-radius:14px;background:var(--panel);display:flex;align-items:center;gap:12px;padding:15px 16px;text-align:left;transition:transform .2s var(--ease),border-color .2s}
+.quick:hover{transform:translateY(-2px);border-color:#593920}
+.quick:active{transform:scale(.98)}
+.quick-icon{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:16px;font-weight:700}
+.quick-copy{min-width:0}
+.quick-copy strong{display:block;font-size:13px;font-weight:750;color:var(--text)}
+.quick-copy small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.quick b{margin-left:auto;font-size:13px;color:var(--gold);font-weight:600}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between}
+.metric.primary{border-color:#593315;background:linear-gradient(180deg,#1f150d 0%,#18110b 100%)}
+.metric-top{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:12px;color:#b8a696;font-weight:650}
+.metric-top span:last-child{font-size:14px;color:var(--accent)}
+.metric-value{font-size:clamp(24px,2.3vw,32px);font-weight:850;letter-spacing:-1px;color:var(--gold);white-space:nowrap;margin:10px 0 6px}
+.metric-hint{font-size:11px;color:var(--muted)}
+
+.dash-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:14px;margin-top:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;min-width:0}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.panel-head h3{font-size:16px;font-weight:750;letter-spacing:-.3px;margin:0;color:var(--text)}
+.panel-head select{background:var(--panel-alt);border:1px solid var(--line);color:var(--text);border-radius:99px;padding:7px 14px;font-size:11px;font-weight:700}
+
+.chart{height:215px;display:flex;align-items:flex-end;gap:10px;margin-top:24px;border-bottom:1px solid var(--line);padding-bottom:26px;position:relative}
+.chart:before,.chart:after{content:"";position:absolute;left:0;right:0;border-top:1px dashed var(--line-soft);pointer-events:none}
+.chart:before{top:18px}
+.chart:after{top:52%}
+.chart-col{height:100%;display:flex;flex:1;align-items:center;flex-direction:column;justify-content:flex-end;position:relative;min-width:0;z-index:1}
+.chart-bar{width:min(38px,68%);min-height:3px;border-radius:6px 6px 2px 2px;background:#332419;transition:height .4s var(--ease);position:relative}
+.chart-bar.yellow{background:var(--accent)}
+.chart-bar.negative{background:var(--danger)}
+.chart-label{position:absolute;top:calc(100% + 9px);font-size:10px;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;text-align:center}
+.chart-tip{font-size:10px;font-weight:750;color:var(--gold);margin-bottom:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.chart-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;z-index:1}
+
+.attention-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.attention-stats div{background:var(--panel-alt);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.attention-stats small{display:block;font-size:9px;letter-spacing:.8px;color:var(--muted);font-weight:750}
+.attention-stats strong{display:block;font-size:16px;margin-top:5px;color:var(--text);font-weight:800}
+.attention-list{margin-top:12px;display:grid;gap:8px}
+.attention-item{padding:12px 14px;background:var(--panel-alt);border:1px solid var(--line);border-radius:12px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.attention-item strong{font-size:12px;display:block;color:var(--text)}
+.attention-item small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.attention-item b{background:var(--gold-bg);color:#171008;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:800;white-space:nowrap}
+
+.empty-inline{font-size:12px;color:var(--muted);line-height:1.6;padding:20px 0;margin:0}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.subtle-link{border:0;background:none;color:var(--gold);font-size:11px;font-weight:750;white-space:nowrap}
+.stock-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stock-mini div{background:var(--panel-alt);border:1px solid var(--line);border-radius:12px;padding:15px}
+.stock-mini span{font-size:11px;display:block;color:var(--muted)}
+.stock-mini strong{font-size:24px;display:block;margin-top:6px;color:var(--gold);font-weight:850}
+
+.list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.list-row:last-child{border-bottom:0}
+.list-row .row-main{min-width:0}
+.list-row strong{font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-row small{font-size:10px;color:var(--muted);display:block;margin-top:4px}
+.list-row b{font-size:12px;color:var(--gold);white-space:nowrap}
+
+.section-kicker{font-size:10px;font-weight:800;letter-spacing:1.4px;color:var(--gold);text-transform:uppercase}
+.page-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:6px 0 24px}
+.page-intro h1{font-size:clamp(28px,3.2vw,40px);letter-spacing:-1.4px;line-height:1.08;margin:6px 0 8px}
+.page-intro p{font-size:13px;color:var(--muted);line-height:1.5;max-width:540px;margin:0}
+
+.primary-btn{border:0;background:var(--accent);color:#fff;border-radius:99px;padding:11px 18px;font-size:12px;font-weight:750;white-space:nowrap;min-height:40px;transition:transform .18s}
+.primary-btn:hover{transform:scale(1.02)}
+.primary-btn:active{transform:scale(.97)}
+.secondary-btn{border:1px solid var(--line);background:var(--panel-alt);color:var(--text);border-radius:99px;padding:10px 18px;font-size:12px;font-weight:700}
+
+.search-wrap{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:16px}
+.search-wrap input{width:min(400px,100%);border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);padding:11px 14px;font-size:12px}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-wrap span{color:var(--muted);font-size:11px}
+
+.client-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.client-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:left;color:var(--text);transition:border-color .2s}
+.client-card:hover{border-color:var(--accent)}
+.client-card-top{display:flex;align-items:center;gap:12px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:14px}
+.client-card strong{display:block;font-size:14px}
+.client-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.client-card .arrow-end{margin-left:auto;font-size:18px;color:var(--gold)}
+.client-card-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;border-top:1px solid var(--line-soft);margin-top:15px;padding-top:14px}
+.client-card-bottom label{font-size:9px;color:var(--muted);display:block}
+.client-card-bottom b{font-size:12px;display:block;margin-top:4px;color:var(--gold)}
+
+.record-tabs{margin-bottom:16px}
+.records-panel{padding:22px}
+.small-add,.stock-actions button{background:var(--accent-soft);color:var(--gold);border:1px solid #4d2c14;border-radius:99px;padding:8px 14px;font-size:11px;font-weight:750}
+.record-row{display:grid;grid-template-columns:90px minmax(140px,1fr) minmax(100px,1.1fr) 105px auto;align-items:center;gap:14px;border-bottom:1px solid var(--line-soft);padding:14px 0}
+.record-row:last-child{border:0}
+.record-row time{font-size:11px;color:var(--muted)}
+.record-row strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.record-row .record-detail{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.record-row b{text-align:right;font-size:12px;color:var(--gold)}
+.record-actions{display:flex;gap:6px}
+.record-actions button{border:1px solid var(--line);background:var(--panel-alt);color:var(--text);border-radius:50%;width:28px;height:28px;font-size:12px}
+.record-actions button:hover{border-color:var(--accent)}
+
+.stock-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stock-card{background:var(--panel);color:var(--text);padding:24px;border-radius:18px;border:1px solid var(--line);position:relative;overflow:hidden}
+.stock-card:nth-child(2){background:linear-gradient(145deg,#21160d,#18110b);border-color:#523015}
+.stock-card h3{font-size:20px;margin:8px 0 10px}
+.stock-card strong{font-size:46px;letter-spacing:-2px;line-height:1;color:var(--gold);font-weight:850}
+.stock-card small{font-size:11px;color:var(--muted);margin-left:8px}
+.stock-actions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}
+.stock-explain{margin-bottom:16px}
+.stock-explain p,.daily-flow p,.report-note{color:var(--muted);line-height:1.6;font-size:12px;margin:10px 0 0}
+.stock-explain strong{color:var(--text)}
+.warning{padding:12px;background:#3a2410;border:1px solid #6b421b;border-radius:10px;color:#ffd89a;font-size:11px;margin-top:10px}
+
+.daily-flow{margin-top:14px}
+.daily-flow #flow-date{font-size:11px;color:var(--muted)}
+.flow-table{margin-top:14px;display:grid;grid-template-columns:minmax(115px,1.3fr) repeat(2,minmax(60px,1fr));font-size:11px}
+.flow-table>*{padding:10px 8px;border-bottom:1px solid var(--line-soft)}
+.flow-table strong{text-align:right}
+.flow-table .head{font-size:9px;color:var(--muted);font-weight:800}
+.flow-table .total{font-weight:800;color:var(--gold);background:var(--panel-alt)}
+
+.report-filters{margin-bottom:16px}
+.report-panel .chart{height:255px}
+.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+
+dialog{border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--text);box-shadow:0 30px 90px #000c;width:min(540px,calc(100% - 24px));max-height:min(90vh,840px);padding:24px;overflow:auto}
+dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
+.dialog-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+.dialog-head h2{font-size:22px;letter-spacing:-.6px;margin:6px 0 18px}
+.icon-close{border:1px solid var(--line);background:var(--panel-alt);color:var(--text);width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:700;color:#d5c5b7}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#100b07;color:var(--text);font-size:13px;min-height:40px}
+.field input::placeholder{color:#6e5d4f}
+.field-help{font-size:10px;color:var(--muted);line-height:1.4}
+.form-section{font-size:10px;letter-spacing:1px;font-weight:800;color:var(--gold);border-top:1px solid var(--line-soft);padding-top:15px;margin:10px 0 14px}
+.form-total{border-radius:11px;background:var(--accent-soft);border:1px solid #4d2c14;color:var(--gold);padding:12px 14px;font-size:12px;font-weight:750;margin-top:6px;display:none}
+.form-total.visible{display:block}
+.form-error{color:var(--danger);font-size:11px;min-height:18px;margin-top:8px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.form-actions button{min-width:115px}
+
+.profile-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profile-prices div{background:var(--panel-alt);border:1px solid var(--line);border-radius:12px;padding:14px}
+.profile-prices small,.profile-stats small{display:block;font-size:9px;color:var(--muted)}
+.profile-prices strong{font-size:19px;display:block;margin-top:6px;color:var(--gold)}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+.profile-stats strong{display:block;font-size:13px;margin-top:4px}
+.profile-list{margin:16px 0}
+.profile-list h3{font-size:13px}
+.profile-actions{display:flex;gap:8px;flex-wrap:wrap}
+.profile-actions button{flex:1}
+
+.sync-box{background:var(--panel-alt);border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:14px}
+.sync-box h3{font-size:14px;margin:0 0 6px;color:var(--text)}
+.sync-box p{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 12px}
+.backup-row{display:flex;gap:8px;flex-wrap:wrap}
+.backup-row button{flex:1}
+
+#toast{position:fixed;z-index:30;right:24px;bottom:24px;background:#26170c;border:1px solid var(--accent);color:#fff;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:650;opacity:0;pointer-events:none;transform:translateY(12px);transition:all .25s}
+#toast.show{opacity:1;transform:translateY(0)}
+.mobile-nav{display:none}
+
+@media(max-width:1150px){
+  .sidebar{width:210px}
+  .topbar,.view{padding-left:24px;padding-right:24px}
+  .metrics,.quick-row{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media(max-width:850px){
+  .sidebar{display:none}
+  .topbar{height:58px;padding:0 18px}
+  .view{padding:18px 18px 96px}
+  .mobile-nav{display:flex;position:fixed;z-index:20;bottom:0;left:0;right:0;background:var(--sidebar);border-top:1px solid var(--line);color:var(--muted);justify-content:space-around;padding:8px 5px max(8px,env(safe-area-inset-bottom))}
+  .mobile-nav button{border:0;background:none;color:inherit;font-size:10px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:55px;padding:4px 2px}
+  .mobile-nav button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2}
+  .mobile-nav button.active{color:var(--accent)}
+  #toast{bottom:76px}
+}
+@media(max-width:670px){
+  .dash-header{align-items:flex-start;flex-direction:column}
+  .header-controls{width:100%;justify-content:space-between}
+  .quick-row{grid-template-columns:1fr 1fr}
+  .bottom-grid,.client-grid,.stock-cards,.report-summary{grid-template-columns:1fr}
+  .record-row{grid-template-columns:72px minmax(0,1fr) 80px auto;gap:8px}
+  .record-detail{display:none}
+  .page-intro{align-items:flex-start;flex-direction:column}
+  .demo-banner{align-items:flex-start;flex-direction:column;gap:8px}
+  .field-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" aria-label="Navegação principal">
+ <div class="identity">
+  <span class="identity-mark" aria-hidden="true">
+   <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+  </span>
+  <span>minha<span class="identity-line">distribuidora.</span></span>
+ </div>
+ <div class="workspace-label">MENU</div>
+ <nav class="side-nav">
+  <button class="nav-item active" data-view="painel"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Painel geral</button>
+  <button class="nav-item" data-view="clientes"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Clientes</button>
+  <button class="nav-item" data-view="movimentos"><span class="nav-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>Movimentações</button>
+  <button class="nav-item" data-view="estoque"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Carga e boia</button>
+  <button class="nav-item" data-view="relatorios"><span class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Relatórios</button>
+ </nav>
+ <button class="side-bottom" id="storage-btn" type="button" title="Configurar nuvem ou baixar backup">
+  <div class="local-dot" id="storage-dot"></div>
+  <div>
+   <strong id="storage-title">Armazenamento Local</strong>
+   <small id="storage-sub">Offline · Neste aparelho</small>
+  </div>
+ </button>
+</aside>
+
+<div class="main-column">
+<header class="topbar">
+ <div class="top-left"><strong id="today-label"></strong></div>
+ <div class="top-actions">
+  <button class="status-pill" id="top-storage-btn" type="button"><i id="top-storage-dot"></i><span id="top-storage-text">Operação local</span></button>
+  <button class="round-btn" id="info-button" aria-label="Sobre esta plataforma">?</button>
+ </div>
+</header>
+
+<main>
+ <section class="view active" id="view-painel" aria-label="Painel geral">
+  <div class="demo-banner" id="demo-banner">
+   <span><strong>Modo de Exemplo.</strong> Visualizando registros de demonstração.</span>
+   <button id="start-real" class="text-button">Começar com dados reais ↗</button>
+  </div>
+
+  <div class="dash-header">
+   <h1>Painel geral</h1>
+   <div class="header-controls">
+    <div class="period-tabs" role="group" aria-label="Selecionar período">
+     <button data-period="dia">Dia</button>
+     <button data-period="semana">Semana</button>
+     <button data-period="mes">Mês</button>
+     <button data-period="ano">Ano</button>
+    </div>
+    <label class="date-picker" for="period-date">
+     <span>DATA BASE</span>
+     <input id="period-date" type="date" aria-label="Escolher a data para análise">
+    </label>
+    <div class="period-box">
+     <button id="period-prev" aria-label="Período anterior">‹</button>
+     <span id="period-name"></span>
+     <button id="period-next" aria-label="Próximo período">›</button>
+    </div>
+   </div>
+  </div>
+
+  <div class="quick-row">
+   <button class="quick" data-form="sale"><span class="quick-icon">+</span><span class="quick-copy"><strong>Nova Venda</strong><small>Entrega na rua</small></span><b>↗</b></button>
+   <button class="quick" data-form="expense"><span class="quick-icon">−</span><span class="quick-copy"><strong>Novo Gasto</strong><small>Diesel / Alimentação</small></span><b>↗</b></button>
+   <button class="quick" data-form="load"><span class="quick-icon">→</span><span class="quick-copy"><strong>Nova Carga</strong><small>Nota da fonte</small></span><b>↗</b></button>
+   <button class="quick" data-form="payment"><span class="quick-icon">✓</span><span class="quick-copy"><strong>Receber Cliente</strong><small>Abater débito</small></span><b>↗</b></button>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="dash-grid">
+   <section class="panel chart-panel">
+    <div class="panel-head">
+     <h3>Movimento no período</h3>
+     <select id="chart-metric" aria-label="Número mostrado no gráfico">
+      <option value="sales">Faturamento</option>
+      <option value="receipts">Recebido</option>
+      <option value="expenses">Gastos de rua</option>
+      <option value="profit">Resultado estimado</option>
+     </select>
+    </div>
+    <div id="chart" class="chart" role="img" aria-label="Gráfico de movimentação"></div>
+   </section>
+   <section class="panel side-panel">
+    <div class="panel-head"><h3>Precisa de atenção</h3></div>
+    <div id="attention"></div>
+   </section>
+  </div>
+
+  <div class="bottom-grid">
+   <section class="panel">
+    <div class="panel-head">
+     <h3>Boia atual no caminhão</h3>
+     <button class="subtle-link" data-view="estoque">Ver controle ↗</button>
+    </div>
+    <div id="stock-short"></div>
+   </section>
+   <section class="panel">
+    <div class="panel-head">
+     <h3>Últimos lançamentos</h3>
+     <button class="subtle-link" data-view="movimentos">Ver todos ↗</button>
+    </div>
+    <div id="recent"></div>
+   </section>
+  </div>
+ </section>
+
+ <section class="view" id="view-clientes" aria-labelledby="clients-title">
+  <div class="page-intro">
+   <div>
+    <span class="section-kicker">CARTEIRA DE CLIENTES</span>
+    <h1 id="clients-title">Quem move o negócio.</h1>
+    <p>Preços próprios, histórico de entregas, valores a receber e frequência em um só lugar.</p>
+   </div>
+   <button class="primary-btn" data-form="client">＋ Adicionar cliente</button>
+  </div>
+  <div class="search-wrap">
+   <input id="client-search" type="search" placeholder="Buscar cliente pelo nome ou telefone" aria-label="Buscar clientes">
+   <span id="client-count"></span>
+  </div>
+  <div id="client-list" class="client-grid"></div>
+ </section>
+
+ <section class="view" id="view-movimentos" aria-labelledby="movements-title">
+  <div class="page-intro">
+   <div>
+    <span class="section-kicker">HISTÓRICO EDITÁVEL</span>
+    <h1 id="movements-title">Cada lançamento conta.</h1>
+    <p>Corrija registros quando precisar. O painel e o gráfico são recalculados automaticamente.</p>
+   </div>
+   <button class="primary-btn" data-form="sale">＋ Novo lançamento</button>
+  </div>
+  <div class="record-tabs" role="group" aria-label="Tipo de registro">
+   <button data-record="sales">Vendas</button>
+   <button data-record="loads">Notas</button>
+   <button data-record="payments">Recebimentos</button>
+   <button data-record="supplierPayments">Pagamentos à fonte</button>
+   <button data-record="expenses">Gastos</button>
+   <button data-record="stockEvents">Boia e perdas</button>
+  </div>
+  <div class="panel records-panel">
+   <div class="panel-head">
+    <h3 id="record-title">Vendas</h3>
+    <button class="small-add" id="record-add">＋ Adicionar</button>
+   </div>
+   <div id="record-list"></div>
+  </div>
+ </section>
+
+ <section class="view" id="view-estoque" aria-labelledby="stock-title">
+  <div class="page-intro">
+   <div>
+    <span class="section-kicker">CARGA + BOIA</span>
+    <h1 id="stock-title">O caminhão em números.</h1>
+    <p>Boia que veio de antes, água nova da nota e o que saiu nas entregas.</p>
+   </div>
+   <button class="primary-btn" data-form="load">＋ Nova carga</button>
+  </div>
+  <div class="stock-cards" id="stock-cards"></div>
+  <div class="panel daily-flow">
+   <div class="panel-head">
+    <div>
+     <span class="section-kicker">CONFERÊNCIA DE HOJE</span>
+     <h3>Boia anterior + nota nova</h3>
+    </div>
+    <span id="flow-date"></span>
+   </div>
+   <div id="stock-flow"></div>
+  </div>
+  <div class="stock-actions">
+   <button data-form="opening">＋ Informar boia inicial</button>
+   <button data-form="loss">＋ Registrar quebra/perda</button>
+   <button data-form="adjustment">✎ Corrigir contagem</button>
+  </div>
+  <div class="panel stock-explain">
+   <h3>Como a conta funciona</h3>
+   <p><strong>Boia anterior + carga nova − entregas − perdas ± correções = boia atual.</strong> A nota da fonte considera só o carregamento novo. A água que sobrou continua no estoque do caminhão até ser vendida ou registrada como perda.</p>
+   <div id="stock-warning"></div>
+  </div>
+  <div class="panel records-panel">
+   <div class="panel-head">
+    <h3>Últimas cargas</h3>
+    <button class="small-add" data-form="load">＋ Adicionar</button>
+   </div>
+   <div id="load-short"></div>
+  </div>
+ </section>
+
+ <section class="view" id="view-relatorios" aria-labelledby="reports-title">
+  <div class="page-intro">
+   <div>
+    <span class="section-kicker">DADOS PARA DECIDIR</span>
+    <h1 id="reports-title">A evolução fica visível.</h1>
+    <p>Compare períodos e acompanhe o negócio com os mesmos registros feitos no dia a dia.</p>
+   </div>
+  </div>
+  <div class="report-filters">
+   <button data-report="dia">Dia</button>
+   <button data-report="semana">Semana</button>
+   <button data-report="mes">Mês</button>
+   <button data-report="ano">Ano</button>
+  </div>
+  <div class="panel report-panel">
+   <div class="panel-head">
+    <h3 id="report-heading">Faturamento mensal</h3>
+    <div class="period-box">
+     <button id="report-prev" aria-label="Período anterior">‹</button>
+     <span id="report-period"></span>
+     <button id="report-next" aria-label="Próximo período">›</button>
+    </div>
+   </div>
+   <div id="report-chart" class="chart"></div>
+  </div>
+  <div id="report-summary" class="report-summary"></div>
+  <p class="report-note">Resultado estimado = vendas − custo das unidades vendidas − gastos de rua − custo das perdas. Pagamentos de notas e recebimentos de clientes são acompanhados separadamente no caixa.</p>
+ </section>
+</main>
+</div>
+
+<nav class="mobile-nav" aria-label="Navegação no celular">
+ <button data-view="painel" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Painel</button>
+ <button data-view="clientes"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</button>
+ <button data-view="movimentos"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Registros</button>
+ <button data-view="estoque"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Boia</button>
+ <button data-view="relatorios"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Dados</button>
+</nav>
+</div>
+
+<dialog id="form-dialog" aria-labelledby="form-title">
+ <div class="dialog-head">
+  <div><span class="section-kicker" id="form-kicker">NOVO REGISTRO</span><h2 id="form-title"></h2></div>
+  <button class="icon-close" id="form-close" aria-label="Fechar">×</button>
+ </div>
+ <form id="entry-form">
+  <div id="form-fields"></div>
+  <div class="form-total" id="form-total"></div>
+  <div class="form-error" id="form-error" role="alert"></div>
+  <div class="form-actions">
+   <button type="button" class="secondary-btn" id="form-cancel">Cancelar</button>
+   <button type="submit" class="primary-btn">Salvar registro ↗</button>
+  </div>
+ </form>
+</dialog>
+
+<dialog id="profile-dialog" aria-labelledby="profile-title">
+ <div class="dialog-head">
+  <div><span class="section-kicker">FICHA DO CLIENTE</span><h2 id="profile-title"></h2></div>
+  <button class="icon-close" id="profile-close" aria-label="Fechar">×</button>
+ </div>
+ <div id="profile-body"></div>
+</dialog>
+
+<dialog id="sync-dialog" aria-labelledby="sync-title">
+ <div class="dialog-head">
+  <div><span class="section-kicker">ARMAZENAMENTO E NUVEM</span><h2 id="sync-title">Celular + Computador</h2></div>
+  <button class="icon-close" id="sync-close" aria-label="Fechar">×</button>
+ </div>
+ <div class="sync-box">
+  <h3>1. Sincronização automática (Google Firebase Gratuito)</h3>
+  <p>Cole a URL do seu Realtime Database abaixo nos dois aparelhos. O painel continuará funcionando sem internet na rua e sincronizará tudo automaticamente quando conectar.</p>
+  <div class="field">
+   <label for="cloud-url">URL do Banco no Firebase</label>
+   <input id="cloud-url" type="url" placeholder="https://sua-distribuidora-default-rtdb.firebaseio.com">
+  </div>
+  <div class="field">
+   <label for="cloud-key">Código da sua operação (mesmo nome no PC e no celular)</label>
+   <input id="cloud-key" type="text" placeholder="Ex.: distribuidora_mauricio">
+  </div>
+  <div class="backup-row">
+   <button type="button" class="primary-btn" id="cloud-save">Conectar e Sincronizar ↗</button>
+   <button type="button" class="secondary-btn" id="cloud-pull">Buscar da nuvem agora</button>
+   <button type="button" class="secondary-btn" id="cloud-disconnect">Desconectar</button>
+  </div>
+ </div>
+ <div class="sync-box" style="margin-bottom:0">
+  <h3>2. Backup Manual em Arquivo</h3>
+  <p>Guarde uma cópia de segurança dos seus lançamentos no aparelho ou envie pelo WhatsApp para abrir no computador.</p>
+  <div class="backup-row">
+   <button type="button" class="secondary-btn" id="backup-export">⬇ Baixar backup (.json)</button>
+   <button type="button" class="secondary-btn" id="backup-import-btn">⬆ Carregar backup</button>
+   <input type="file" id="backup-file" accept=".json,application/json" hidden>
+  </div>
+ </div>
+</dialog>
+
+<dialog id="info-dialog" aria-labelledby="info-title">
+ <div class="dialog-head">
+  <div><span class="section-kicker">SOBRE O PAINEL</span><h2 id="info-title">Gestão rápida da distribuidora.</h2></div>
+  <button class="icon-close" id="info-close" aria-label="Fechar">×</button>
+ </div>
+ <p style="font-size:13px;color:var(--muted);line-height:1.6">Todos os lançamentos ficam salvos automaticamente neste aparelho. Para usar no celular e no computador ao mesmo tempo, clique em <strong>Armazenamento Local</strong> no menu e conecte sua URL gratuita do Firebase ou use o botão de Backup.</p>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{'use strict';
+const KEY='minha_distribuidora_preview_v1';
+const CLOUD_KEY='minha_distribuidora_cloud_v1';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
+const num=n=>Number(n)||0, round=n=>Math.round((num(n)+Number.EPSILON)*100)/100;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const localDay=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseDay=s=>new Date(`${s}T12:00:00`);
+const addDay=(s,n)=>{const d=parseDay(s);d.setDate(d.getDate()+n);return localDay(d)};
+const addMonth=(s,n)=>{const d=parseDay(s);d.setDate(1);d.setMonth(d.getMonth()+n);return localDay(d)};
+const addYear=(s,n)=>{const d=parseDay(s);d.setFullYear(d.getFullYear()+n);return localDay(d)};
+const fmtDate=s=>s?new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short',year:'numeric'}).format(parseDay(s)):'—';
+const fmtShort=s=>s?new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(parseDay(s)):'—';
+const id=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():`r${Date.now()}${Math.random().toString(36).slice(2)}`;
+const stamp=()=>new Date().toISOString();
+const empty=()=>({version:1,demo:false,updatedAt:stamp(),clients:[],loads:[],sales:[],payments:[],supplierPayments:[],expenses:[],stockEvents:[]});
+
+function seed(){
+ const s=empty(),today=localDay();s.demo=true;const D=n=>addDay(today,n);
+ s.clients=[
+  {id:'c1',name:'João da Silva',phone:'',address:'',priceCrystal:20,priceIaia:16,loanCrystal:2,loanIaia:0,active:true},
+  {id:'c2',name:'Mercado Sol',phone:'',address:'',priceCrystal:19,priceIaia:15,loanCrystal:0,loanIaia:0,active:true},
+  {id:'c3',name:'Ana Martins',phone:'',address:'',priceCrystal:21,priceIaia:16,loanCrystal:1,loanIaia:0,active:true},
+  {id:'c4',name:'Oficina Norte',phone:'',address:'',priceCrystal:20,priceIaia:15,loanCrystal:0,loanIaia:0,active:true}
+ ];
+ const ev=(arr,o)=>arr.push({id:id(),createdAt:stamp(),time:'10:00',...o});
+ ev(s.stockEvents,{date:D(-90),type:'opening',product:'crystal',qty:10,unitCost:10,note:'Boia inicial de exemplo'});
+ ev(s.stockEvents,{date:D(-90),type:'opening',product:'iaia',qty:8,unitCost:8,note:'Boia inicial de exemplo'});
+ ev(s.loads,{id:'n1',date:D(-80),invoice:'EX-001',qtyCrystal:30,totalCrystal:330,qtyIaia:20,totalIaia:180,paidNow:0});
+ ev(s.loads,{id:'n2',date:D(-45),invoice:'EX-002',qtyCrystal:35,totalCrystal:399,qtyIaia:20,totalIaia:190,paidNow:0});
+ ev(s.loads,{id:'n3',date:D(-9),invoice:'EX-003',qtyCrystal:30,totalCrystal:360,qtyIaia:18,totalIaia:180,paidNow:0});
+ ev(s.loads,{id:'n4',date:D(-2),invoice:'EX-004',qtyCrystal:24,totalCrystal:300,qtyIaia:18,totalIaia:189,paidNow:0});
+ ev(s.sales,{date:D(-75),clientId:'c1',qtyCrystal:8,qtyIaia:4,priceCrystal:20,priceIaia:16,paidNow:224});
+ ev(s.sales,{date:D(-71),clientId:'c2',qtyCrystal:5,qtyIaia:2,priceCrystal:19,priceIaia:15,paidNow:125});
+ ev(s.sales,{date:D(-41),clientId:'c1',qtyCrystal:10,qtyIaia:5,priceCrystal:20,priceIaia:16,paidNow:280});
+ ev(s.sales,{date:D(-37),clientId:'c3',qtyCrystal:6,qtyIaia:0,priceCrystal:21,priceIaia:16,paidNow:0});
+ ev(s.sales,{date:D(-8),clientId:'c1',qtyCrystal:8,qtyIaia:3,priceCrystal:20,priceIaia:16,paidNow:208});
+ ev(s.sales,{date:D(-5),clientId:'c2',qtyCrystal:7,qtyIaia:4,priceCrystal:19,priceIaia:15,paidNow:0});
+ ev(s.sales,{date:D(-1),clientId:'c3',qtyCrystal:4,qtyIaia:2,priceCrystal:21,priceIaia:16,paidNow:116});
+ ev(s.sales,{date:today,clientId:'c1',qtyCrystal:5,qtyIaia:2,priceCrystal:20,priceIaia:16,paidNow:0});
+ ev(s.payments,{date:D(-35),clientId:'c3',amount:126});
+ ev(s.supplierPayments,{date:D(-79),loadId:'n1',amount:510});
+ ev(s.supplierPayments,{date:D(-44),loadId:'n2',amount:589});
+ ev(s.supplierPayments,{date:D(-7),loadId:'n3',amount:540});
+ ev(s.supplierPayments,{date:today,loadId:'n4',amount:200});
+ ev(s.expenses,{date:D(-75),category:'Diesel',amount:90,note:'Exemplo'});
+ ev(s.expenses,{date:D(-41),category:'Diesel',amount:105,note:'Exemplo'});
+ ev(s.expenses,{date:D(-8),category:'Alimentação',amount:28,note:'Exemplo'});
+ ev(s.expenses,{date:D(-1),category:'Diesel',amount:95,note:'Exemplo'});
+ ev(s.expenses,{date:today,category:'Alimentação',amount:22,note:'Exemplo'});
+ ev(s.stockEvents,{date:D(-4),type:'loss',product:'crystal',qty:1,note:'Quebra de exemplo'});
+ return s;
+}
+
+let data;
+try{
+ data=JSON.parse(localStorage.getItem(KEY)||'null');
+ if(!data||data.version!==1)throw Error('reset');
+}catch{
+ data=seed();
+ localStorage.setItem(KEY,JSON.stringify(data));
+}
+
+let cloudCfg={url:'https://minha-distribuidora-bcc18-default-rtdb.firebaseio.com',key:'distribuidora_principal'};
+try{
+ const savedCfg=JSON.parse(localStorage.getItem(CLOUD_KEY)||'null');
+ if(savedCfg&&savedCfg.url)cloudCfg=savedCfg;
+}catch{}
+
+const ui={view:'painel',period:'mes',anchor:localDay(),record:'sales',report:'ano',reportAnchor:localDay(),formType:null,formId:null,profileId:null};
+
+function cleanUrl(raw){
+ const str=(raw||'').trim();
+ const match=str.match(/https:\/\/[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.firebaseio\.com|https:\/\/[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.firebasedatabase\.app/);
+ if(match)return match[0].replace(/\/+$/,'');
+ return str.replace(/\/+$/,'');
+}
+function cloudEndpoint(){
+ if(!cloudCfg.url)return null;
+ const safeKey=(cloudCfg.key||'distribuidora_principal').replace(/[^a-zA-Z0-9_-]/g,'_');
+ return `${cleanUrl(cloudCfg.url)}/painel_agua/${safeKey}.json`;
+}
+function updateStorageBadge(onlineState=false,customSub=null){
+ const hasCloud=!!cloudEndpoint();
+ const isOnline=hasCloud&&onlineState&&navigator.onLine;
+ $('#storage-dot').classList.toggle('online',isOnline);
+ $('#top-storage-dot').classList.toggle('online',isOnline);
+ $('#storage-title').textContent=hasCloud?'Nuvem Conectada':'Armazenamento Local';
+ $('#storage-sub').textContent=customSub||(hasCloud?(navigator.onLine?'Sincronizado · PC e Celular':'Sem rede · Salvo no aparelho'):'Offline · Neste aparelho');
+ $('#top-storage-text').textContent=hasCloud?(navigator.onLine?'Nuvem ativa':'Offline (pendente)'):'Operação local';
+}
+
+async function pushCloud(silent=true){
+ const ep=cloudEndpoint();
+ if(!ep||!navigator.onLine){updateStorageBadge(false);return false;}
+ try{
+  const res=await fetch(ep,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  localStorage.removeItem(KEY+'_pending');
+  updateStorageBadge(true);
+  if(!silent)toast('Sincronizado na nuvem com sucesso.');
+  return true;
+ }catch{
+  localStorage.setItem(KEY+'_pending','1');
+  updateStorageBadge(false,'Pendente · Tentará ao reconectar');
+  if(!silent)toast('Salvo no aparelho. Verifique a URL ou as regras do Firebase.');
+  return false;
+ }
+}
+
+async function pullCloud(silent=true){
+ const ep=cloudEndpoint();
+ if(!ep||!navigator.onLine){updateStorageBadge(false);return false;}
+ try{
+  const res=await fetch(ep);
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const remote=await res.json();
+  if(remote&&remote.version===1){
+   const pending=localStorage.getItem(KEY+'_pending');
+   if(pending&&data.updatedAt&&remote.updatedAt&&data.updatedAt>remote.updatedAt){
+    await pushCloud(silent);
+    return true;
+   }
+   data=remote;
+   localStorage.setItem(KEY,JSON.stringify(data));
+   render();
+   updateStorageBadge(true);
+   if(!silent)toast('Dados atualizados a partir da nuvem.');
+   return true;
+  }else if(remote===null){
+   await pushCloud(silent);
+   return true;
+  }
+ }catch{
+  updateStorageBadge(false);
+  if(!silent)toast('Não foi possível buscar da nuvem agora.');
+ }
+ return false;
+}
+
+function persist(){
+ data.updatedAt=stamp();
+ localStorage.setItem(KEY,JSON.stringify(data));
+ render();
+ if(cloudEndpoint())pushCloud(true);
+}
+
+function toast(message){
+ const t=$('#toast');
+ t.textContent=message;
+ t.classList.add('show');
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+const clientName=key=>data.clients.find(c=>c.id===key)?.name||'Cliente removido';
+const loadName=key=>data.loads.find(l=>l.id===key)?.invoice||'Nota removida';
+const saleTotal=s=>round(num(s.qtyCrystal)*num(s.priceCrystal)+num(s.qtyIaia)*num(s.priceIaia));
+const loadTotal=l=>round(num(l.totalCrystal)+num(l.totalIaia));
+const dueClient=(key,excludeId=null)=>round(data.sales.filter(s=>s.clientId===key).reduce((a,s)=>a+saleTotal(s)-num(s.paidNow),0)-data.payments.filter(p=>p.clientId===key&&p.id!==excludeId).reduce((a,p)=>a+num(p.amount),0));
+const dueLoad=(key,excludeId=null)=>{const l=data.loads.find(x=>x.id===key);return l?round(loadTotal(l)-num(l.paidNow)-data.supplierPayments.filter(p=>p.loadId===key&&p.id!==excludeId).reduce((a,p)=>a+num(p.amount),0)):0};
+const productLabel=p=>p==='crystal'?'Crystal':'Iaiá';
+function unitCost(l,p){const q=num(l[p==='crystal'?'qtyCrystal':'qtyIaia']);return q>0?num(l[p==='crystal'?'totalCrystal':'totalIaia'])/q:0}
+
+function stockAt(date=localDay()){
+ const a={crystal:0,iaia:0};
+ for(const e of data.stockEvents){if(e.date>date)continue;let n=num(e.qty);if(e.type==='loss')n=-Math.abs(n);a[e.product]+=n}
+ for(const l of data.loads){if(l.date<=date){a.crystal+=num(l.qtyCrystal);a.iaia+=num(l.qtyIaia)}}
+ for(const s of data.sales){if(s.date<=date){a.crystal-=num(s.qtyCrystal);a.iaia-=num(s.qtyIaia)}}
+ return a;
+}
+
+function costLedger(){
+ const lots={crystal:[],iaia:[]},saleCosts={},lossCosts={},missing={crystal:0,iaia:0};
+ const events=[];
+ for(const x of data.stockEvents)events.push({date:x.date,order:x.type==='opening'||num(x.qty)>0?0:3,createdAt:x.createdAt||'',kind:'stock',x});
+ for(const x of data.loads)events.push({date:x.date,order:1,createdAt:x.createdAt||'',kind:'load',x});
+ for(const x of data.sales)events.push({date:x.date,order:2,createdAt:x.createdAt||'',kind:'sale',x});
+ events.sort((a,b)=>a.date.localeCompare(b.date)||a.order-b.order||a.createdAt.localeCompare(b.createdAt));
+ function take(product,quantity){
+  let need=Math.max(0,num(quantity)),cost=0;
+  while(need>0.000001&&lots[product].length){
+   const lot=lots[product][0],used=Math.min(need,lot.qty);
+   cost+=used*lot.cost;need-=used;lot.qty-=used;
+   if(lot.qty<.000001)lots[product].shift();
+  }
+  if(need>0.000001)missing[product]+=need;
+  return round(cost);
+ }
+ for(const e of events){
+  const x=e.x;
+  if(e.kind==='load'){
+   for(const p of ['crystal','iaia']){const q=num(x[p==='crystal'?'qtyCrystal':'qtyIaia']);if(q>0)lots[p].push({qty:q,cost:unitCost(x,p)})}
+  }else if(e.kind==='sale'){
+   saleCosts[x.id]=round(take('crystal',x.qtyCrystal)+take('iaia',x.qtyIaia));
+  }else{
+   const q=num(x.qty),p=x.product;
+   if(x.type==='loss'||q<0)lossCosts[x.id]=take(p,Math.abs(q));
+   else if(q>0)lots[p].push({qty:q,cost:num(x.unitCost)});
+  }
+ }
+ return {saleCosts,lossCosts,missing};
+}
+
+function startOf(period,anchor){const d=parseDay(anchor);if(period==='dia')return anchor;if(period==='semana'){d.setDate(d.getDate()-((d.getDay()+6)%7));return localDay(d)}if(period==='mes'){d.setDate(1);return localDay(d)}d.setMonth(0,1);return localDay(d)}
+function endOf(period,anchor){const s=startOf(period,anchor);if(period==='dia')return s;if(period==='semana')return addDay(s,6);if(period==='mes')return addDay(addMonth(s,1),-1);return addDay(addYear(s,1),-1)}
+function periodName(period,anchor){const s=startOf(period,anchor),e=endOf(period,anchor),d=parseDay(s);if(period==='dia')return fmtDate(s);if(period==='semana')return `${fmtShort(s)} – ${fmtShort(e)}`;if(period==='mes')return new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(d);return String(d.getFullYear())}
+function moveAnchor(period,anchor,delta){if(period==='dia')return addDay(anchor,delta);if(period==='semana')return addDay(anchor,7*delta);if(period==='mes')return addMonth(anchor,delta);return addYear(anchor,delta)}
+function inRange(date,period,anchor){return date>=startOf(period,anchor)&&date<=endOf(period,anchor)}
+
+function summary(period,anchor){
+ const inP=x=>inRange(x.date,period,anchor),c=costLedger();
+ const sales=data.sales.filter(inP),payments=data.payments.filter(inP),loads=data.loads.filter(inP),supplier=data.supplierPayments.filter(inP),expenses=data.expenses.filter(inP),losses=data.stockEvents.filter(x=>inP(x)&&(x.type==='loss'||num(x.qty)<0));
+ const revenue=round(sales.reduce((a,s)=>a+saleTotal(s),0)),received=round(sales.reduce((a,s)=>a+num(s.paidNow),0)+payments.reduce((a,p)=>a+num(p.amount),0)),operating=round(expenses.reduce((a,e)=>a+num(e.amount),0)),purchasePaid=round(loads.reduce((a,l)=>a+num(l.paidNow),0)+supplier.reduce((a,p)=>a+num(p.amount),0)),costSold=round(sales.reduce((a,s)=>a+num(c.saleCosts[s.id]),0)),lossCost=round(losses.reduce((a,x)=>a+num(c.lossCosts[x.id]),0));
+ return{revenue,received,operating,purchasePaid,costSold,lossCost,profit:round(revenue-costSold-operating-lossCost),cash:round(received-operating-purchasePaid),salesCount:sales.length};
+}
+
+function metricCard(label,value,hint,primary=false,symbol='↗'){
+ return `<article class="metric${primary?' primary':''}"><div class="metric-top"><span>${label}</span><span>${symbol}</span></div><div><div class="metric-value">${money(value)}</div><div class="metric-hint">${hint}</div></div></article>`;
+}
+function trend(metric,period,anchor){
+ const old=summary(period,moveAnchor(period,anchor,-1))[metric],now=summary(period,anchor)[metric];
+ if(Math.abs(old)<.01)return 'Sem base no período anterior';
+ const diff=round((now-old)/Math.abs(old)*100);
+ return `${diff>=0?'↑':'↓'} ${diff>=0?'+':''}${diff.toLocaleString('pt-BR',{maximumFractionDigits:0})}% vs. anterior`;
+}
+
+function chartBuckets(period,anchor){
+ const s=startOf(period,anchor),e=endOf(period,anchor),out=[];
+ if(period==='dia'){for(let h=0;h<24;h+=4)out.push({label:String(h).padStart(2,'0')+'h',has:(d,t)=>d===s&&Math.min(5,Math.floor((parseInt(t||'12',10)||0)/4))===h/4})}
+ else if(period==='semana'){for(let i=0;i<7;i++){const day=addDay(s,i);out.push({label:new Intl.DateTimeFormat('pt-BR',{weekday:'short'}).format(parseDay(day)).replace('.',''),has:d=>d===day})}}
+ else if(period==='mes'){const max=parseDay(e).getDate();for(let first=1;first<=max;first+=5){const last=Math.min(max,first+4);out.push({label:`${String(first).padStart(2,'0')}–${String(last).padStart(2,'0')}`,has:d=>d>=`${s.slice(0,7)}-${String(first).padStart(2,'0')}`&&d<=`${s.slice(0,7)}-${String(last).padStart(2,'0')}`})}}
+ else{for(let i=0;i<12;i++){const month=`${s.slice(0,4)}-${String(i+1).padStart(2,'0')}`;out.push({label:new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(Number(s.slice(0,4)),i,1)).replace('.',''),has:d=>d.startsWith(month)})}}
+ return out;
+}
+
+function chartValues(period,anchor,metric){
+ const buckets=chartBuckets(period,anchor),c=costLedger();
+ return buckets.map(b=>{
+  let v=0;const add=(x,n)=>{if(b.has(x.date,x.time))v+=n};
+  for(const s of data.sales){if(metric==='sales')add(s,saleTotal(s));if(metric==='receipts'||metric==='cash')add(s,num(s.paidNow));if(metric==='profit')add(s,saleTotal(s)-num(c.saleCosts[s.id]))}
+  for(const p of data.payments)if(metric==='receipts'||metric==='cash')add(p,num(p.amount));
+  for(const x of data.expenses){if(metric==='expenses')add(x,num(x.amount));if(metric==='cash'||metric==='profit')add(x,-num(x.amount))}
+  for(const l of data.loads)if(metric==='cash')add(l,-num(l.paidNow));
+  for(const p of data.supplierPayments)if(metric==='cash')add(p,-num(p.amount));
+  for(const x of data.stockEvents)if(metric==='profit'&&(x.type==='loss'||num(x.qty)<0))add(x,-num(c.lossCosts[x.id]));
+  return{label:b.label,value:round(v)};
+ });
+}
+
+function chartHTML(values){
+ const peak=Math.max(1,...values.map(x=>Math.abs(x.value))),any=values.some(x=>Math.abs(x.value)>.001);
+ if(!any)return `<div class="chart-empty">Ainda não há registros neste período.<br>Faça um lançamento para ver o gráfico.</div>`;
+ return values.map((x,i)=>{
+  const h=x.value===0?3:Math.max(6,Math.round(Math.abs(x.value)/peak*150));
+  const cls=x.value<0?'negative':i===values.length-1?'yellow':'';
+  return `<div class="chart-col" title="${esc(x.label)}: ${money(x.value)}"><span class="chart-tip">${x.value?money(x.value).replace(',00',''):''}</span><div class="chart-bar ${cls}" style="height:${h}px"></div><span class="chart-label">${esc(x.label)}</span></div>`;
+ }).join('');
+}
+
+function latestDateFor(clientId){return data.sales.filter(s=>s.clientId===clientId).map(s=>s.date).sort().at(-1)||null}
+function avgInterval(clientId){const dates=[...new Set(data.sales.filter(s=>s.clientId===clientId).map(s=>s.date))].sort();if(dates.length<2)return null;let sum=0;for(let i=1;i<dates.length;i++)sum+=(parseDay(dates[i])-parseDay(dates[i-1]))/86400000;return Math.round(sum/(dates.length-1))}
+function allOperations(){
+ const arr=[];
+ for(const s of data.sales)arr.push({date:s.date,createdAt:s.createdAt||'',name:`Venda · ${clientName(s.clientId)}`,detail:`${num(s.qtyCrystal)} Crystal · ${num(s.qtyIaia)} Iaiá`,value:saleTotal(s)});
+ for(const x of data.expenses)arr.push({date:x.date,createdAt:x.createdAt||'',name:`Gasto · ${x.category}`,detail:x.note||'Despesa do dia',value:-num(x.amount)});
+ for(const p of data.payments)arr.push({date:p.date,createdAt:p.createdAt||'',name:`Recebido · ${clientName(p.clientId)}`,detail:'Pagamento de cliente',value:num(p.amount)});
+ for(const l of data.loads)arr.push({date:l.date,createdAt:l.createdAt||'',name:`Carga · ${l.invoice||'Sem número'}`,detail:`${num(l.qtyCrystal)} Crystal · ${num(l.qtyIaia)} Iaiá`,value:loadTotal(l)});
+ return arr.sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));
+}
+
+function render(){
+ const today=localDay();
+ $('#today-label').textContent=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(parseDay(today));
+ $('#demo-banner').hidden=!data.demo;
+ $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===ui.view));
+ $$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${ui.view}`));
+ $('#period-date').value=ui.anchor;
+ $('#period-name').textContent=periodName(ui.period,ui.anchor);
+ $$('[data-period]').forEach(b=>b.classList.toggle('active',b.dataset.period===ui.period));
+
+ const s=summary(ui.period,ui.anchor);
+ $('#metrics').innerHTML=
+  metricCard('Faturamento Total',s.revenue,trend('revenue',ui.period,ui.anchor),true,'↗')+
+  metricCard('Recebido de Clientes',s.received,`${s.salesCount} venda${s.salesCount===1?'':'s'} no período`,false,'✓')+
+  metricCard('Gastos de Rua',s.operating,'Alimentação, diesel e outros',false,'−')+
+  metricCard('Resultado Estimado',s.profit,'Após custo da água, gastos e perdas',false,'✳');
+
+ const metric=$('#chart-metric').value;
+ $('#chart').innerHTML=chartHTML(chartValues(ui.period,ui.anchor,metric));
+ const dueClients=data.clients.map(c=>({name:c.name,value:dueClient(c.id),hint:'Cliente'})).filter(x=>x.value>.01);
+ const dueNotes=data.loads.map(l=>({name:`Nota ${l.invoice||'sem número'}`,value:dueLoad(l.id),hint:'Fonte'})).filter(x=>x.value>.01);
+ const all=[...dueClients,...dueNotes].sort((a,b)=>b.value-a.value);
+ $('#attention').innerHTML=`<div class="attention-stats"><div><small>CLIENTES DEVENDO</small><strong>${money(dueClients.reduce((a,x)=>a+x.value,0))}</strong></div><div><small>NOTAS EM ABERTO</small><strong>${money(dueNotes.reduce((a,x)=>a+x.value,0))}</strong></div></div>`+(all.length?`<div class="attention-list">${all.slice(0,5).map(x=>`<div class="attention-item"><div><strong>${esc(x.name)}</strong><small>${x.hint}</small></div><b>${money(x.value)}</b></div>`).join('')}</div>`:'<p class="empty-inline">Nenhum valor em aberto nos registros atuais.</p>');
+
+ const stock=stockAt();
+ $('#stock-short').innerHTML=`<div class="stock-mini"><div><span>Crystal</span><strong>${stock.crystal.toLocaleString('pt-BR')}</strong></div><div><span>Iaiá</span><strong>${stock.iaia.toLocaleString('pt-BR')}</strong></div></div>`;
+ const ops=allOperations().slice(0,4);
+ $('#recent').innerHTML=ops.length?ops.map(x=>`<div class="list-row"><div class="row-main"><strong>${esc(x.name)}</strong><small>${fmtShort(x.date)} · ${esc(x.detail)}</small></div><b>${money(x.value)}</b></div>`).join(''):'<p class="empty-inline">Os lançamentos aparecerão aqui.</p>';
+
+ renderClients();
+ renderRecords();
+ renderStock();
+ renderReports();
+}
+
+function renderClients(){
+ const query=$('#client-search').value.trim().toLocaleLowerCase('pt-BR');
+ const arr=data.clients.filter(c=>c.active!==false&&(c.name.toLocaleLowerCase('pt-BR').includes(query)||(c.phone||'').includes(query))).sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+ $('#client-count').textContent=`${arr.length} cliente${arr.length===1?'':'s'}`;
+ $('#client-list').innerHTML=arr.length?arr.map(c=>{
+  const last=latestDateFor(c.id),freq=avgInterval(c.id),due=dueClient(c.id);
+  return `<button class="client-card" data-profile="${esc(c.id)}"><div class="client-card-top"><span class="avatar">${esc(c.name.slice(0,1).toUpperCase())}</span><div><strong>${esc(c.name)}</strong><small>${last?`Última entrega: ${fmtDate(last)}`:'Sem entregas registradas'}</small></div><span class="arrow-end">↗</span></div><div class="client-card-bottom"><div><label>CRYSTAL</label><b>${money(c.priceCrystal)}</b></div><div><label>IAIÁ</label><b>${money(c.priceIaia)}</b></div><div><label>EM ABERTO</label><b>${money(due)}</b></div></div>${freq?`<small style="margin-top:12px">Intervalo médio: ${freq} dia${freq===1?'':'s'}</small>`:''}</button>`;
+ }).join(''):'<p class="empty-inline">Nenhum cliente encontrado. Adicione um cliente para começar.</p>';
+}
+
+const recordNames={sales:'Vendas',loads:'Notas da fonte',payments:'Recebimentos',supplierPayments:'Pagamentos à fonte',expenses:'Gastos',stockEvents:'Boia e perdas'};
+const formFor={sales:'sale',loads:'load',payments:'payment',supplierPayments:'supplierPayment',expenses:'expense',stockEvents:'stockEvent'};
+function recordInfo(type,x){
+ if(type==='sales')return{title:clientName(x.clientId),detail:`${num(x.qtyCrystal)} Crystal · ${num(x.qtyIaia)} Iaiá · Recebido ${money(x.paidNow)}`,value:saleTotal(x)};
+ if(type==='loads')return{title:x.invoice||'Nota sem número',detail:`${num(x.qtyCrystal)} Crystal · ${num(x.qtyIaia)} Iaiá · Falta ${money(dueLoad(x.id))}`,value:loadTotal(x)};
+ if(type==='payments')return{title:clientName(x.clientId),detail:'Recebimento de cliente',value:num(x.amount)};
+ if(type==='supplierPayments')return{title:loadName(x.loadId),detail:'Pagamento à fonte',value:num(x.amount)};
+ if(type==='expenses')return{title:x.category,detail:x.note||'Gasto do dia',value:num(x.amount)};
+ return{title:x.type==='opening'?'Boia inicial':x.type==='loss'?'Quebra / perda':'Correção de contagem',detail:`${productLabel(x.product)} · ${num(x.qty)} un. · ${x.note||''}`,value:null};
+}
+function renderRecords(){
+ const list=data[ui.record]||[];
+ $('#record-title').textContent=recordNames[ui.record];
+ $$('[data-record]').forEach(b=>b.classList.toggle('active',b.dataset.record===ui.record));
+ $('#record-add').dataset.form=formFor[ui.record];
+ const arr=[...list].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||'').localeCompare(a.createdAt||''));
+ $('#record-list').innerHTML=arr.length?arr.map(x=>{
+  const v=recordInfo(ui.record,x);
+  return `<div class="record-row"><time>${fmtShort(x.date)}</time><strong title="${esc(v.title)}">${esc(v.title)}</strong><span class="record-detail" title="${esc(v.detail)}">${esc(v.detail)}</span><b>${v.value===null?'—':money(v.value)}</b><span class="record-actions"><button data-edit-type="${ui.record}" data-edit-id="${esc(x.id)}" aria-label="Editar">✎</button><button data-delete-type="${ui.record}" data-delete-id="${esc(x.id)}" aria-label="Excluir">×</button></span></div>`;
+ }).join(''):'<p class="empty-inline">Ainda não há registros deste tipo.</p>';
+}
+
+function renderStock(){
+ const st=stockAt(),today=localDay();
+ $('#stock-cards').innerHTML=['crystal','iaia'].map(p=>`<div class="stock-card"><span class="section-kicker">BOIA ATUAL NO CAMINHÃO</span><h3>${productLabel(p)}</h3><strong>${st[p].toLocaleString('pt-BR')}</strong><small>garrafões cheios</small></div>`).join('');
+ const yesterday=stockAt(addDay(today,-1));
+ const todayLoads=data.loads.filter(x=>x.date===today),todaySales=data.sales.filter(x=>x.date===today),todayLoss=data.stockEvents.filter(x=>x.date===today&&x.type==='loss'),todayAdjust=data.stockEvents.filter(x=>x.date===today&&x.type!=='loss');
+ const q=(arr,p)=>arr.reduce((sum,x)=>sum+num(x[p==='crystal'?'qtyCrystal':'qtyIaia']),0);
+ const losses=p=>todayLoss.filter(x=>x.product===p).reduce((sum,x)=>sum+num(x.qty),0);
+ const adjustments=p=>todayAdjust.filter(x=>x.product===p).reduce((sum,x)=>sum+num(x.qty),0);
+ const flowRows=[['Boia de ontem',yesterday.crystal,yesterday.iaia],['Carga nova',q(todayLoads,'crystal'),q(todayLoads,'iaia')],['Entregas',-q(todaySales,'crystal'),-q(todaySales,'iaia')],['Quebras e perdas',-losses('crystal'),-losses('iaia')],['Correções',adjustments('crystal'),adjustments('iaia')],['Boia atual',st.crystal,st.iaia]];
+ $('#flow-date').textContent=fmtDate(today);
+ $('#stock-flow').innerHTML='<div class="flow-table"><span class="head">MOVIMENTO</span><strong class="head">CRYSTAL</strong><strong class="head">IAIÁ</strong>'+flowRows.map((r,i)=>'<span class="'+(i===5?'total':'')+'">'+r[0]+'</span><strong class="'+(i===5?'total':'')+'">'+r[1]+'</strong><strong class="'+(i===5?'total':'')+'">'+r[2]+'</strong>').join('')+'</div><p>A boia de ontem é reaproveitada no caminhão. Somente a carga nova entra na nota de hoje.</p>';
+ const warn=costLedger().missing;const issues=[];
+ if(st.crystal<0||st.iaia<0)issues.push('A contagem ficou negativa. Confira cargas, vendas e perdas.');
+ if(warn.crystal>0||warn.iaia>0)issues.push('Há unidades vendidas ou perdidas sem custo de origem registrado. O resultado é estimado até corrigir a boia inicial ou a carga.');
+ $('#stock-warning').innerHTML=issues.map(x=>`<div class="warning">${esc(x)}</div>`).join('');
+ $('#load-short').innerHTML=[...data.loads].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(l=>`<div class="list-row"><div class="row-main"><strong>Nota ${esc(l.invoice||'sem número')} · ${fmtDate(l.date)}</strong><small>${num(l.qtyCrystal)} Crystal · ${num(l.qtyIaia)} Iaiá · Em aberto ${money(dueLoad(l.id))}</small></div><b>${money(loadTotal(l))}</b></div>`).join('')||'<p class="empty-inline">Nenhuma carga registrada.</p>';
+}
+
+function renderReports(){
+ const p=ui.report,a=ui.reportAnchor,s=summary(p,a);
+ $$('[data-report]').forEach(b=>b.classList.toggle('active',b.dataset.report===p));
+ $('#report-heading').textContent=`Faturamento ${p==='dia'?'por horário':p==='semana'?'por dia':p==='mes'?'por faixa do mês':'por mês'}`;
+ $('#report-period').textContent=periodName(p,a);
+ $('#report-chart').innerHTML=chartHTML(chartValues(p,a,'sales'));
+ $('#report-summary').innerHTML=
+  metricCard('Faturamento',s.revenue,trend('revenue',p,a),true)+
+  metricCard('Recebido',s.received,'Entradas de clientes')+
+  metricCard('Pago à fonte',s.purchasePaid,'Saída de caixa das notas')+
+  metricCard('Movimento de caixa',s.cash,'Recebido − gastos − fonte')+
+  metricCard('Custo da água vendida',s.costSold,'Pelo custo de origem da carga')+
+  metricCard('Gastos de rua',s.operating,'Alimentação, diesel e outros');
+}
+
+function showView(name){if(!['painel','clientes','movimentos','estoque','relatorios'].includes(name))return;ui.view=name;render();window.scrollTo({top:0,behavior:'smooth'})}
+
+function showProfile(clientId){
+ const c=data.clients.find(x=>x.id===clientId);if(!c)return;ui.profileId=clientId;
+ $('#profile-title').textContent=c.name;
+ const sales=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>b.date.localeCompare(a.date));
+ const due=dueClient(c.id),avg=avgInterval(c.id);
+ $('#profile-body').innerHTML=`<div class="profile-prices"><div><small>PREÇO / CRYSTAL</small><strong>${money(c.priceCrystal)}</strong></div><div><small>PREÇO / IAIÁ</small><strong>${money(c.priceIaia)}</strong></div></div><div class="profile-stats"><div><small>EM ABERTO</small><strong>${money(due)}</strong></div><div><small>ÚLTIMA ENTREGA</small><strong>${fmtShort(latestDateFor(c.id))}</strong></div><div><small>INTERVALO MÉDIO</small><strong>${avg?`${avg} dia${avg===1?'':'s'}`:'—'}</strong></div></div><div class="profile-list"><h3>Garrafões emprestados</h3><p style="font-size:12px;color:var(--muted)">Crystal: ${num(c.loanCrystal)} · Iaiá: ${num(c.loanIaia)}</p><h3>Últimas entregas</h3>${sales.slice(0,5).map(s=>`<div class="list-row"><div class="row-main"><strong>${fmtDate(s.date)}</strong><small>${num(s.qtyCrystal)} Crystal · ${num(s.qtyIaia)} Iaiá</small></div><b>${money(saleTotal(s))}</b></div>`).join('')||'<p class="empty-inline">Nenhuma entrega registrada.</p>'}</div><div class="profile-actions"><button class="secondary-btn" data-profile-edit="${esc(c.id)}">Editar perfil e preços</button><button class="primary-btn" data-profile-sale="${esc(c.id)}">＋ Nova venda</button></div>`;
+ $('#profile-dialog').showModal();
+}
+
+function input(name,label,value='',type='text',opts={}){
+ const attrs=[`name="${name}"`,`id="f-${name}"`,`type="${type}"`,`value="${esc(value)}"`];
+ if(opts.required)attrs.push('required');if(opts.min!==undefined)attrs.push(`min="${opts.min}"`);if(opts.max!==undefined)attrs.push(`max="${opts.max}"`);if(type==='number')attrs.push(`step="${opts.integer?'1':'0.01'}"`);if(opts.placeholder)attrs.push(`placeholder="${esc(opts.placeholder)}"`);
+ return `<div class="field${opts.full?' full':''}"><label for="f-${name}">${label}</label><input ${attrs.join(' ')}>${opts.help?`<span class="field-help">${opts.help}</span>`:''}</div>`;
+}
+function select(name,label,value,options,full=false){
+ return `<div class="field${full?' full':''}"><label for="f-${name}">${label}</label><select name="${name}" id="f-${name}">${options.map(([v,t])=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(t)}</option>`).join('')}</select></div>`;
+}
+const grid=x=>`<div class="field-grid">${x}</div>`;
+
+function formMarkup(type,x){
+ const day=x.date||localDay();
+ const clientOpts=data.clients.filter(c=>c.active!==false||c.id===x.clientId).map(c=>[c.id,c.name]);
+ const loadOpts=data.loads.map(l=>[l.id,`${l.invoice||'Nota sem número'} · ${fmtShort(l.date)} · falta ${money(dueLoad(l.id,x.id))}`]);
+ const prod=[['crystal','Crystal'],['iaia','Iaiá']];let h='';
+ if(type==='client'){h=grid(input('name','Nome do cliente',x.name||'','text',{required:true,full:true})+input('phone','Telefone',x.phone||'','tel')+input('address','Endereço / referência',x.address||'','text'))+`<div class="form-section">PREÇOS PADRÃO POR UNIDADE</div>`+grid(input('priceCrystal','Crystal · R$ por unidade',x.priceCrystal??'','number',{required:true,min:0})+input('priceIaia','Iaiá · R$ por unidade',x.priceIaia??'','number',{required:true,min:0}))+`<div class="form-section">GARRAFÕES EMPRESTADOS</div>`+grid(input('loanCrystal','Crystal · quantidade',x.loanCrystal??0,'number',{min:0,integer:true})+input('loanIaia','Iaiá · quantidade',x.loanIaia??0,'number',{min:0,integer:true}))+select('active','Situação',x.active===false?'false':'true',[['true','Ativo'],['false','Arquivado']],true)}
+ if(type==='load'){h=grid(input('date','Data da nota',day,'date',{required:true})+input('invoice','Número da nota',x.invoice||'','text',{full:true}))+`<div class="form-section">CRYSTAL · ÁGUA NOVA</div>`+grid(input('qtyCrystal','Quantidade',x.qtyCrystal??0,'number',{min:0,integer:true})+input('totalCrystal','Valor da linha na nota · R$',x.totalCrystal??0,'number',{min:0}))+`<div class="form-section">IAIÁ · ÁGUA NOVA</div>`+grid(input('qtyIaia','Quantidade',x.qtyIaia??0,'number',{min:0,integer:true})+input('totalIaia','Valor da linha na nota · R$',x.totalIaia??0,'number',{min:0}))+input('paidNow','Já pago à fonte · R$',x.paidNow??0,'number',{min:0,help:'Se a nota ficou aberta, deixe zero. Registre o pagamento depois.'})}
+ if(type==='sale'){const c=data.clients.find(v=>v.id===x.clientId)||data.clients.find(v=>v.active!==false);h=grid(input('date','Data da entrega',day,'date',{required:true})+select('clientId','Cliente',x.clientId||c?.id||'',clientOpts,true))+`<div class="form-section">PRODUTOS E QUANTIDADES</div>`+grid(input('qtyCrystal','Crystal · quantidade',x.qtyCrystal??0,'number',{min:0,integer:true})+input('priceCrystal','Crystal · preço unitário R$',x.priceCrystal??c?.priceCrystal??0,'number',{min:0})+input('qtyIaia','Iaiá · quantidade',x.qtyIaia??0,'number',{min:0,integer:true})+input('priceIaia','Iaiá · preço unitário R$',x.priceIaia??c?.priceIaia??0,'number',{min:0}))+input('paidNow','Recebido na entrega · R$',x.paidNow??0,'number',{min:0,help:'Pode deixar zero quando o cliente vai pagar depois.'})+`<div class="field"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" name="savePrices" style="width:auto;min-height:0"> Salvar os preços desta entrega no perfil do cliente</label><span class="field-help">Sem marcar, a mudança vale só para esta venda.</span></div>`}
+ if(type==='expense'){h=grid(input('date','Data do gasto',day,'date',{required:true})+select('category','Categoria',x.category||'Alimentação',[['Alimentação','Alimentação'],['Diesel','Diesel'],['Manutenção','Manutenção'],['Pedágio','Pedágio'],['Outros','Outros']])+input('amount','Valor · R$',x.amount??'','number',{required:true,min:0.01})+input('note','Descrição',x.note||'','text',{full:true,placeholder:'Ex.: almoço da equipe'}))}
+ if(type==='payment'){h=grid(input('date','Data do recebimento',day,'date',{required:true})+select('clientId','Cliente',x.clientId||clientOpts[0]?.[0]||'',clientOpts,true))+input('amount','Valor recebido · R$',x.amount??'','number',{required:true,min:0.01})+`<button type="button" class="small-add" id="pay-all">Receber todo o saldo deste cliente</button>`}
+ if(type==='supplierPayment'){h=grid(input('date','Data do pagamento',day,'date',{required:true})+select('loadId','Nota da fonte',x.loadId||loadOpts[0]?.[0]||'',loadOpts,true))+input('amount','Valor pago · R$',x.amount??'','number',{required:true,min:0.01})+`<button type="button" class="small-add" id="pay-note">Pagar o saldo desta nota</button>`}
+ if(['opening','loss','adjustment'].includes(type)){const isLoss=type==='loss',isAdjust=type==='adjustment';h=grid(input('date','Data',day,'date',{required:true})+select('product','Produto',x.product||'crystal',prod)+input('qty',isAdjust?'Diferença na contagem (+ ou −)':'Quantidade',x.qty??'','number',{required:true,...(isAdjust?{}:{min:1}),integer:true})+(isLoss?'':input('unitCost','Custo unitário desta boia · R$',x.unitCost??'','number',{min:0}))+input('note','Motivo / observação',x.note||'','text',{full:true}))}
+ return h;
+}
+
+const formTitles={client:'Cliente',load:'Nota e carga',sale:'Venda e entrega',expense:'Gasto do dia',payment:'Recebimento',supplierPayment:'Pagamento à fonte',opening:'Boia inicial',loss:'Quebra ou perda',adjustment:'Correção da boia'};
+function openForm(type,recordId=null,defaults={}){
+ if(type==='stockEvent'){const x=data.stockEvents.find(y=>y.id===recordId);type=x?.type||'adjustment'}
+ if(!formTitles[type])return;
+ const arr=type==='client'?'clients':type==='load'?'loads':type==='sale'?'sales':type==='expense'?'expenses':type==='payment'?'payments':type==='supplierPayment'?'supplierPayments':'stockEvents';
+ const existing=recordId?data[arr].find(y=>y.id===recordId):null;
+ ui.formType=type;ui.formId=recordId;
+ $('#form-kicker').textContent=existing?'EDITAR REGISTRO':'NOVO REGISTRO';
+ $('#form-title').textContent=formTitles[type];
+ $('#form-fields').innerHTML=formMarkup(type,{...defaults,...existing});
+ $('#form-error').textContent='';
+ $('#form-total').classList.remove('visible');
+ $('#form-dialog').showModal();
+ updateFormTotal();
+}
+
+function updateFormTotal(){
+ const type=ui.formType,f=$('#entry-form'),v=name=>num(f.elements[name]?.value),box=$('#form-total');let text='';
+ if(type==='sale'){const total=round(v('qtyCrystal')*v('priceCrystal')+v('qtyIaia')*v('priceIaia'));text=`Total da venda: ${money(total)} · Fica em aberto: ${money(Math.max(0,round(total-v('paidNow'))))}`}
+ if(type==='load'){const total=round(v('totalCrystal')+v('totalIaia'));text=`Total da nota: ${money(total)} · Falta pagar: ${money(Math.max(0,round(total-v('paidNow'))))}`}
+ if(type==='payment')text=`Em aberto para este cliente: ${money(Math.max(0,dueClient(f.elements.clientId?.value,ui.formId)))}`;
+ if(type==='supplierPayment')text=`Falta pagar nesta nota: ${money(Math.max(0,dueLoad(f.elements.loadId?.value,ui.formId)))}`;
+ box.textContent=text;box.classList.toggle('visible',!!text);
+}
+
+function saveForm(ev){
+ ev.preventDefault();
+ const type=ui.formType,f=$('#entry-form'),a=Object.fromEntries(new FormData(f).entries()),oldId=ui.formId;
+ const now=stamp();
+ const arrName=type==='client'?'clients':type==='load'?'loads':type==='sale'?'sales':type==='expense'?'expenses':type==='payment'?'payments':type==='supplierPayment'?'supplierPayments':'stockEvents';
+ const original=oldId?data[arrName].find(x=>x.id===oldId):null;
+ const out={...original,id:oldId||id(),createdAt:original?.createdAt||now,date:a.date||undefined,time:original?.time||new Date().toTimeString().slice(0,5)};
+ const fail=msg=>{$('#form-error').textContent=msg;return false};
+ const price=x=>round(num(x));const whole=x=>Math.trunc(num(x));
+
+ if(type==='client'){out.name=(a.name||'').trim();out.phone=(a.phone||'').trim();out.address=(a.address||'').trim();out.priceCrystal=price(a.priceCrystal);out.priceIaia=price(a.priceIaia);out.loanCrystal=whole(a.loanCrystal);out.loanIaia=whole(a.loanIaia);out.active=a.active!=='false';delete out.date;delete out.time;if(!out.name)return fail('Informe o nome do cliente.');if(out.priceCrystal<0||out.priceIaia<0||out.loanCrystal<0||out.loanIaia<0)return fail('Preços e quantidades não podem ser negativos.')}
+ if(type==='load'){out.invoice=(a.invoice||'').trim();out.qtyCrystal=whole(a.qtyCrystal);out.qtyIaia=whole(a.qtyIaia);out.totalCrystal=price(a.totalCrystal);out.totalIaia=price(a.totalIaia);out.paidNow=price(a.paidNow);const total=loadTotal(out);if(out.qtyCrystal+out.qtyIaia<1)return fail('Informe ao menos uma unidade na carga.');if([out.qtyCrystal,out.qtyIaia,out.totalCrystal,out.totalIaia,out.paidNow].some(n=>n<0))return fail('Não use valores negativos.');if((out.qtyCrystal===0&&out.totalCrystal>0)||(out.qtyIaia===0&&out.totalIaia>0))return fail('Um produto sem quantidade não pode ter valor na nota.');if((out.qtyCrystal>0&&out.totalCrystal<=0)||(out.qtyIaia>0&&out.totalIaia<=0))return fail('Informe o custo de cada produto carregado.');if(out.paidNow>total+.001)return fail('O pagamento não pode superar o valor da nota.')}
+ if(type==='sale'){out.clientId=a.clientId;out.qtyCrystal=whole(a.qtyCrystal);out.qtyIaia=whole(a.qtyIaia);out.priceCrystal=price(a.priceCrystal);out.priceIaia=price(a.priceIaia);out.paidNow=price(a.paidNow);if(!data.clients.some(c=>c.id===out.clientId))return fail('Selecione um cliente.');if(out.qtyCrystal+out.qtyIaia<1)return fail('Informe a quantidade vendida de Crystal ou Iaiá.');if([out.qtyCrystal,out.qtyIaia,out.priceCrystal,out.priceIaia,out.paidNow].some(n=>n<0))return fail('Não use valores negativos.');if(out.paidNow>saleTotal(out)+.001)return fail('O valor recebido não pode superar o total da venda.');if(a.savePrices==='on'){const c=data.clients.find(c=>c.id===out.clientId);c.priceCrystal=out.priceCrystal;c.priceIaia=out.priceIaia}}
+ if(type==='expense'){out.category=a.category;out.amount=price(a.amount);out.note=(a.note||'').trim();if(out.amount<=0)return fail('Informe um gasto maior que zero.')}
+ if(type==='payment'){out.clientId=a.clientId;out.amount=price(a.amount);if(out.amount<=0)return fail('Informe um recebimento maior que zero.');if(out.amount>dueClient(out.clientId,oldId)+.001)return fail('Esse valor supera o saldo do cliente.')}
+ if(type==='supplierPayment'){out.loadId=a.loadId;out.amount=price(a.amount);if(out.amount<=0)return fail('Informe um pagamento maior que zero.');if(out.amount>dueLoad(out.loadId,oldId)+.001)return fail('Esse valor supera o saldo da nota.')}
+ if(['opening','loss','adjustment'].includes(type)){out.type=type;out.product=a.product;out.qty=whole(a.qty);out.note=(a.note||'').trim();out.unitCost=price(a.unitCost);if(!out.qty)return fail('Informe uma quantidade diferente de zero.');if(type!=='adjustment'&&out.qty<0)return fail('A quantidade deve ser positiva.');if(type!=='loss'&&out.qty>0&&out.unitCost<=0)return fail('Informe o custo unitário da água acrescentada.')}
+ if(!out.date&&type!=='client')return fail('Informe uma data.');
+ if(original){const i=data[arrName].findIndex(x=>x.id===oldId);data[arrName][i]=out}else data[arrName].push(out);
+ $('#form-dialog').close();persist();toast(original?'Registro atualizado.':'Registro salvo.');
+ if(ui.profileId&&type==='client'&&$('#profile-dialog').open)showProfile(ui.profileId);
+ return false;
+}
+
+function deleteRecord(type,recordId){
+ const arr=data[type];if(!arr)return;const record=arr.find(x=>x.id===recordId);if(!record)return;
+ const info=recordInfo(type,record);
+ if(type==='loads'&&data.supplierPayments.some(p=>p.loadId===recordId)){toast('Exclua primeiro os pagamentos desta nota.');return}
+ if(!confirm(`Excluir ${info.title} de ${fmtDate(record.date)}?`))return;
+ data[type]=arr.filter(x=>x.id!==recordId);persist();toast('Registro excluído.');
+}
+
+function openSyncModal(){
+ $('#cloud-url').value=cloudCfg.url||'';
+ $('#cloud-key').value=cloudCfg.key||'distribuidora_principal';
+ $('#sync-dialog').showModal();
+}
+
+function setUpEvents(){
+ document.addEventListener('click',ev=>{
+  const t=ev.target.closest('button');if(!t)return;
+  if(t.dataset.view){showView(t.dataset.view);return}
+  if(t.dataset.form){openForm(t.dataset.form);return}
+  if(t.dataset.period){ui.period=t.dataset.period;render();return}
+  if(t.dataset.report){ui.report=t.dataset.report;ui.reportAnchor=localDay();render();return}
+  if(t.dataset.record){ui.record=t.dataset.record;render();return}
+  if(t.dataset.profile){showProfile(t.dataset.profile);return}
+  if(t.dataset.profileEdit){$('#profile-dialog').close();openForm('client',t.dataset.profileEdit);return}
+  if(t.dataset.profileSale){const clientId=t.dataset.profileSale;$('#profile-dialog').close();openForm('sale',null,{clientId});return}
+  if(t.dataset.editType){openForm(formFor[t.dataset.editType],t.dataset.editId);return}
+  if(t.dataset.deleteType){deleteRecord(t.dataset.deleteType,t.dataset.deleteId);return}
+ });
+
+ $('#storage-btn').onclick=openSyncModal;
+ $('#top-storage-btn').onclick=openSyncModal;
+ $('#sync-close').onclick=()=>$('#sync-dialog').close();
+
+ $('#cloud-save').onclick=async()=>{
+  const url=cleanUrl($('#cloud-url').value);
+  const key=($('#cloud-key').value||'distribuidora_principal').trim();
+  if(!url){toast('Cole a URL do Firebase para conectar.');return;}
+  cloudCfg={url,key};
+  localStorage.setItem(CLOUD_KEY,JSON.stringify(cloudCfg));
+  const pulled=await pullCloud(true);
+  if(pulled)await pushCloud(false);
+  $('#sync-dialog').close();
+ };
+
+ $('#cloud-pull').onclick=async()=>{await pullCloud(false);};
+ $('#cloud-disconnect').onclick=()=>{
+  cloudCfg={url:'',key:'distribuidora_principal'};
+  localStorage.removeItem(CLOUD_KEY);
+  updateStorageBadge(false);
+  toast('Nuvem desconectada. Usando modo local.');
+  $('#sync-dialog').close();
+ };
+
+ $('#backup-export').onclick=()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`backup_distribuidora_${localDay()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Backup baixado neste aparelho.');
+ };
+
+ $('#backup-import-btn').onclick=()=>$('#backup-file').click();
+ $('#backup-file').onchange=ev=>{
+  const file=ev.target.files?.[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+   try{
+    const parsed=JSON.parse(String(reader.result||''));
+    if(!parsed||parsed.version!==1)throw Error('Formato inválido');
+    data=parsed;
+    persist();
+    $('#sync-dialog').close();
+    toast('Backup restaurado com sucesso.');
+   }catch{
+    toast('Arquivo inválido. Use um backup exportado pelo painel.');
+   }
+  };
+  reader.readAsText(file);
+  ev.target.value='';
+ };
+
+ $('#period-date').onchange=event=>{if(event.currentTarget.value){ui.anchor=event.currentTarget.value;render()}};
+ $('#period-prev').onclick=()=>{ui.anchor=moveAnchor(ui.period,ui.anchor,-1);render()};
+ $('#period-next').onclick=()=>{ui.anchor=moveAnchor(ui.period,ui.anchor,1);render()};
+ $('#report-prev').onclick=()=>{ui.reportAnchor=moveAnchor(ui.report,ui.reportAnchor,-1);render()};
+ $('#report-next').onclick=()=>{ui.reportAnchor=moveAnchor(ui.report,ui.reportAnchor,1);render()};
+ $('#chart-metric').onchange=render;
+ $('#client-search').oninput=renderClients;
+ $('#entry-form').onsubmit=saveForm;
+ $('#entry-form').addEventListener('input',updateFormTotal);
+ $('#entry-form').addEventListener('change',ev=>{
+  const f=$('#entry-form');
+  if(ui.formType==='sale'&&ev.target.name==='clientId'){const c=data.clients.find(x=>x.id===f.elements.clientId.value);if(c){f.elements.priceCrystal.value=c.priceCrystal;f.elements.priceIaia.value=c.priceIaia}}
+  if(ui.formType==='payment'&&ev.target.name==='clientId')f.elements.amount.value=Math.max(0,dueClient(f.elements.clientId.value,ui.formId));
+  if(ui.formType==='supplierPayment'&&ev.target.name==='loadId')f.elements.amount.value=Math.max(0,dueLoad(f.elements.loadId.value,ui.formId));
+  updateFormTotal();
+ });
+ $('#form-fields').addEventListener('click',ev=>{
+  if(ev.target.id==='pay-all'){const f=$('#entry-form');f.elements.amount.value=Math.max(0,dueClient(f.elements.clientId.value,ui.formId));updateFormTotal()}
+  if(ev.target.id==='pay-note'){const f=$('#entry-form');f.elements.amount.value=Math.max(0,dueLoad(f.elements.loadId.value,ui.formId));updateFormTotal()}
+ });
+ $('#form-close').onclick=$('#form-cancel').onclick=()=>$('#form-dialog').close();
+ $('#profile-close').onclick=()=>$('#profile-dialog').close();
+ $('#info-button').onclick=()=>$('#info-dialog').showModal();
+ $('#info-close').onclick=()=>$('#info-dialog').close();
+ $('#start-real').onclick=()=>{
+  if(!confirm('Começar com dados reais? Os registros fictícios serão apagados.'))return;
+  data=empty();ui.view='painel';persist();toast('Exemplos removidos. Pronto para seus registros.');
+ };
+ for(const dlg of $$('dialog'))dlg.addEventListener('click',ev=>{if(ev.target===dlg)dlg.close()});
+
+ window.addEventListener('online',()=>pullCloud(true));
+ window.addEventListener('focus',()=>pullCloud(true));
+ setInterval(()=>{if(document.visibilityState==='visible')pullCloud(true)},25000);
+}
+
+setUpEvents();
+render();
+updateStorageBadge(false);
+if(cloudEndpoint())pullCloud(true);
+})();
+</script>
+</body>
+</html>
