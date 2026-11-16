@@ -363,10 +363,10 @@ dialog::backdrop{background:rgba(26,28,30,0.8);backdrop-filter:blur(4px)}
   </div>
 
   <div class="quick-row">
-   <button class="quick" data-form="sale"><span class="quick-icon">+</span><span class="quick-copy"><strong>Nova Venda</strong><small>Entrega na rua</small></span><b>↗</b></button>
-   <button class="quick" data-form="expense"><span class="quick-icon">−</span><span class="quick-copy"><strong>Novo Gasto</strong><small>Diesel / Alimentação</small></span><b>↗</b></button>
-   <button class="quick" data-form="load"><span class="quick-icon">→</span><span class="quick-copy"><strong>Nova Carga</strong><small>Nota da fonte</small></span><b>↗</b></button>
-   <button class="quick" data-form="payment"><span class="quick-icon">✓</span><span class="quick-copy"><strong>Receber Cliente</strong><small>Abater débito</small></span><b>↗</b></button>
+   <button type="button" class="quick" data-form="sale"><span class="quick-icon">+</span><span class="quick-copy"><strong>Nova Venda</strong><small>Entrega na rua</small></span><b>↗</b></button>
+   <button type="button" class="quick" data-form="expense"><span class="quick-icon">−</span><span class="quick-copy"><strong>Novo Gasto</strong><small>Diesel / Alimentação</small></span><b>↗</b></button>
+   <button type="button" class="quick" data-form="load"><span class="quick-icon">→</span><span class="quick-copy"><strong>Nova Carga</strong><small>Nota da fonte</small></span><b>↗</b></button>
+   <button type="button" class="quick" data-form="payment"><span class="quick-icon">✓</span><span class="quick-copy"><strong>Receber Cliente</strong><small>Abater débito</small></span><b>↗</b></button>
   </div>
 
   <div class="metrics" id="metrics"></div>
@@ -615,6 +615,15 @@ const fmtShort=s=>s?new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'
 const id=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():`r${Date.now()}${Math.random().toString(36).slice(2)}`;
 const stamp=()=>new Date().toISOString();
 const empty=()=>({version:1,demo:false,updatedAt:stamp(),clients:[],loads:[],sales:[],payments:[],supplierPayments:[],expenses:[],stockEvents:[]});
+const dataLists=['clients','loads','sales','payments','supplierPayments','expenses','stockEvents'];
+const toArray=v=>Array.isArray(v)?v:(v&&typeof v==='object'?Object.values(v).filter(Boolean):[]);
+const normalizeData=raw=>{
+ const base=empty();
+ if(!raw||typeof raw!=='object')return base;
+ const out={...base,...raw};
+ for(const k of dataLists)out[k]=toArray(raw[k]);
+ return out;
+};
 
 function seed(){
  const s=empty(),today=localDay();s.demo=true;const D=n=>addDay(today,n);
@@ -655,8 +664,9 @@ function seed(){
 
 let data;
 try{
- data=JSON.parse(localStorage.getItem(KEY)||'null');
- if(!data||data.version!==1)throw Error('reset');
+ const parsed=JSON.parse(localStorage.getItem(KEY)||'null');
+ if(!parsed||parsed.version!==1)throw Error('reset');
+ data=normalizeData(parsed);
 }catch{
  data=seed();
  localStorage.setItem(KEY,JSON.stringify(data));
@@ -722,7 +732,7 @@ async function pullCloud(silent=true){
     await pushCloud(silent);
     return true;
    }
-   data=remote;
+   data=normalizeData(remote);
    localStorage.setItem(KEY,JSON.stringify(data));
    render();
    updateStorageBadge(true);
@@ -993,12 +1003,14 @@ const grid=x=>`<div class="field-grid">${x}</div>`;
 
 function formMarkup(type,x){
  const day=x.date||localDay();
- const clientOpts=data.clients.filter(c=>c.active!==false||c.id===x.clientId).map(c=>[c.id,c.name]);
- const loadOpts=data.loads.map(l=>[l.id,`${l.invoice||'Nota sem número'} · ${fmtShort(l.date)} · falta ${money(dueLoad(l.id,x.id))}`]);
+ const clients=Array.isArray(data.clients)?data.clients:[];
+ const loads=Array.isArray(data.loads)?data.loads:[];
+ const clientOpts=clients.filter(c=>c.active!==false||c.id===x.clientId).map(c=>[c.id,c.name]);
+ const loadOpts=loads.map(l=>[l.id,`${l.invoice||'Nota sem número'} · ${fmtShort(l.date)} · falta ${money(dueLoad(l.id,x.id))}`]);
  const prod=[['crystal','Crystal'],['iaia','Iaiá']];let h='';
  if(type==='client'){h=grid(input('name','Nome do cliente',x.name||'','text',{required:true,full:true})+input('phone','Telefone',x.phone||'','tel')+input('address','Endereço / referência',x.address||'','text'))+`<div class="form-section">PREÇOS PADRÃO POR UNIDADE</div>`+grid(input('priceCrystal','Crystal · R$ por unidade',x.priceCrystal??'','number',{required:true,min:0})+input('priceIaia','Iaiá · R$ por unidade',x.priceIaia??'','number',{required:true,min:0}))+`<div class="form-section">GARRAFÕES EMPRESTADOS</div>`+grid(input('loanCrystal','Crystal · quantidade',x.loanCrystal??0,'number',{min:0,integer:true})+input('loanIaia','Iaiá · quantidade',x.loanIaia??0,'number',{min:0,integer:true}))+select('active','Situação',x.active===false?'false':'true',[['true','Ativo'],['false','Arquivado']],true)}
  if(type==='load'){h=grid(input('date','Data da nota',day,'date',{required:true})+input('invoice','Número da nota',x.invoice||'','text',{full:true}))+`<div class="form-section">CRYSTAL · ÁGUA NOVA</div>`+grid(input('qtyCrystal','Quantidade',x.qtyCrystal??0,'number',{min:0,integer:true})+input('totalCrystal','Valor da linha na nota · R$',x.totalCrystal??0,'number',{min:0}))+`<div class="form-section">IAIÁ · ÁGUA NOVA</div>`+grid(input('qtyIaia','Quantidade',x.qtyIaia??0,'number',{min:0,integer:true})+input('totalIaia','Valor da linha na nota · R$',x.totalIaia??0,'number',{min:0}))+input('paidNow','Já pago à fonte · R$',x.paidNow??0,'number',{min:0,help:'Se a nota ficou aberta, deixe zero. Registre o pagamento depois.'})}
- if(type==='sale'){const c=data.clients.find(v=>v.id===x.clientId)||data.clients.find(v=>v.active!==false);h=grid(input('date','Data da entrega',day,'date',{required:true})+select('clientId','Cliente',x.clientId||c?.id||'',clientOpts,true))+`<div class="form-section">PRODUTOS E QUANTIDADES</div>`+grid(input('qtyCrystal','Crystal · quantidade',x.qtyCrystal??0,'number',{min:0,integer:true})+input('priceCrystal','Crystal · preço unitário R$',x.priceCrystal??c?.priceCrystal??0,'number',{min:0})+input('qtyIaia','Iaiá · quantidade',x.qtyIaia??0,'number',{min:0,integer:true})+input('priceIaia','Iaiá · preço unitário R$',x.priceIaia??c?.priceIaia??0,'number',{min:0}))+input('paidNow','Recebido na entrega · R$',x.paidNow??0,'number',{min:0,help:'Pode deixar zero quando o cliente vai pagar depois.'})+`<div class="field"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" name="savePrices" style="width:auto;min-height:0"> Salvar os preços desta entrega no perfil do cliente</label><span class="field-help">Sem marcar, a mudança vale só para esta venda.</span></div>`}
+ if(type==='sale'){const c=clients.find(v=>v.id===x.clientId)||clients.find(v=>v.active!==false);h=grid(input('date','Data da entrega',day,'date',{required:true})+select('clientId','Cliente',x.clientId||c?.id||'',clientOpts,true))+`<div class="form-section">PRODUTOS E QUANTIDADES</div>`+grid(input('qtyCrystal','Crystal · quantidade',x.qtyCrystal??0,'number',{min:0,integer:true})+input('priceCrystal','Crystal · preço unitário R$',x.priceCrystal??c?.priceCrystal??0,'number',{min:0})+input('qtyIaia','Iaiá · quantidade',x.qtyIaia??0,'number',{min:0,integer:true})+input('priceIaia','Iaiá · preço unitário R$',x.priceIaia??c?.priceIaia??0,'number',{min:0}))+input('paidNow','Recebido na entrega · R$',x.paidNow??0,'number',{min:0,help:'Pode deixar zero quando o cliente vai pagar depois.'})+`<div class="field"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" name="savePrices" style="width:auto;min-height:0"> Salvar os preços desta entrega no perfil do cliente</label><span class="field-help">Sem marcar, a mudança vale só para esta venda.</span></div>`}
  if(type==='expense'){h=grid(input('date','Data do gasto',day,'date',{required:true})+select('category','Categoria',x.category||'Alimentação',[['Alimentação','Alimentação'],['Diesel','Diesel'],['Manutenção','Manutenção'],['Pedágio','Pedágio'],['Outros','Outros']])+input('amount','Valor · R$',x.amount??'','number',{required:true,min:0.01})+input('note','Descrição',x.note||'','text',{full:true,placeholder:'Ex.: almoço da equipe'}))}
  if(type==='payment'){h=grid(input('date','Data do recebimento',day,'date',{required:true})+select('clientId','Cliente',x.clientId||clientOpts[0]?.[0]||'',clientOpts,true))+input('amount','Valor recebido · R$',x.amount??'','number',{required:true,min:0.01})+`<button type="button" class="small-add" id="pay-all">Receber todo o saldo deste cliente</button>`}
  if(type==='supplierPayment'){h=grid(input('date','Data do pagamento',day,'date',{required:true})+select('loadId','Nota da fonte',x.loadId||loadOpts[0]?.[0]||'',loadOpts,true))+input('amount','Valor pago · R$',x.amount??'','number',{required:true,min:0.01})+`<button type="button" class="small-add" id="pay-note">Pagar o saldo desta nota</button>`}
@@ -1126,7 +1138,7 @@ function setUpEvents(){
    try{
     const parsed=JSON.parse(String(reader.result||''));
     if(!parsed||parsed.version!==1)throw Error('Formato inválido');
-    data=parsed;
+    data=normalizeData(parsed);
     persist();
     $('#sync-dialog').close();
     toast('Backup restaurado com sucesso.');
