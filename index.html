@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#110c08">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Elyon Águas">
+<link rel="apple-touch-icon" href="https://i.postimg.cc/YCkjmn4x/Gemini-Generated-Image-2l0g8c2l0g8c2l0g-(1).png">
+<meta name="theme-color" content="#1A1C1E">
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Elyon%20%C3%81guas%22%2C%22short_name%22%3A%22Elyon%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231A1C1E%22%2C%22theme_color%22%3A%22%231A1C1E%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.postimg.cc%2FYCkjmn4x%2FGemini-Generated-Image-2l0g8c2l0g8c2l0g-(1).png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D'>
 <meta name="description" content="Painel de gestão da distribuidora: clientes, vendas, carga, boia, despesas e indicadores.">
 <title>Minha Distribuidora — Painel</title>
 <style>
 [hidden]{display:none!important}
 :root{
-  --bg:#110c08;
-  --sidebar:#0d0906;
-  --panel:#19120c;
-  --panel-alt:#211810;
-  --line:#2e2117;
-  --line-soft:#251a12;
+  --bg:#1A1C1E;
+  --sidebar:#1A1C1E;
+  --panel:#1A1C1E;
+  --panel-alt:#1A1C1E;
+  --line:#333333;
+  --line-soft:#333333;
   --text:#f7f2ed;
   --muted:#9a8878;
   --accent:#ea6812;
-  --accent-soft:#2d190b;
+  --accent-soft:#1A1C1E;
   --gold:#f5a623;
   --gold-bg:#f5b82e;
   --danger:#ef6461;
@@ -32,11 +38,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .app{display:flex;min-height:100vh}
 .sidebar{width:240px;flex:none;background:var(--sidebar);color:var(--text);padding:26px 16px 20px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-right:1px solid var(--line-soft)}
-.identity{font-size:18px;font-weight:800;letter-spacing:-.6px;display:flex;align-items:center;gap:11px;line-height:1.05;padding:0 10px}
-.identity-line{display:block;color:var(--gold)}
-.identity-mark{width:36px;height:36px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 6px 18px #ea681244}
-.identity-mark svg{width:20px;height:20px}
-.workspace-label{font-size:10px;color:#6e5d4f;letter-spacing:1.5px;font-weight:800;margin:34px 12px 12px}
+.identity{display:flex;align-items:center;justify-content:center;padding:8px 10px 6px}
+.identity-mark{width:100%;background:transparent;display:flex;align-items:center;justify-content:center;box-shadow:none;filter:none}
+.identity-mark img{width:80%;max-width:160px;height:auto;display:block;margin:0 auto;object-fit:contain;box-shadow:none;filter:none}
+.workspace-label{font-size:10px;color:#6e5d4f;letter-spacing:1.5px;font-weight:800;margin:30px 12px 12px}
 .side-nav{display:grid;gap:6px}
 .nav-item{border:0;background:transparent;color:#a89686;padding:12px 14px;border-radius:12px;text-align:left;display:flex;gap:12px;align-items:center;font-size:13px;font-weight:650;transition:background .2s,color .2s}
 .nav-item:hover{background:#ffffff08;color:#fff}
@@ -44,7 +49,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .nav-icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .nav-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-.side-bottom{margin-top:auto;width:100%;text-align:left;background:#16100b;border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;gap:11px;align-items:center;transition:border-color .2s,transform .15s}
+.side-bottom{margin-top:auto;width:100%;text-align:left;background:#1A1C1E;border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;gap:11px;align-items:center;transition:border-color .2s,transform .15s}
 .side-bottom:hover{border-color:var(--accent);transform:translateY(-1px)}
 .local-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 10px var(--accent)}
 .local-dot.online{background:var(--ok);box-shadow:0 0 10px var(--ok)}
@@ -53,10 +58,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .side-bottom small{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
 
 .main-column{min-width:0;flex:1}
-.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:var(--bg);border-bottom:1px solid var(--line-soft)}
+.topbar{height:auto;min-height:90px;display:flex;align-items:center;justify-content:space-between;padding:8px 36px;background:var(--bg);border-bottom:1px solid var(--line-soft)}
 .top-left{display:flex;align-items:center;gap:16px}
-.top-left strong{font-size:13px;font-weight:600;color:var(--muted)}
-.top-actions{display:flex;align-items:center;gap:10px}
+.topbar-logo{display:none;height:80px;width:auto;max-height:none;max-width:none;flex-shrink:0;object-fit:contain;box-shadow:none;filter:none}
+.today-bar{padding:14px 36px 0;max-width:1600px;margin:0 auto;font-size:12px;font-weight:500;color:var(--muted);text-align:left}
+.top-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .status-pill{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:99px;padding:7px 14px;font-size:11px;font-weight:650;display:flex;align-items:center;gap:8px;transition:border-color .2s}
 .status-pill:hover{border-color:var(--accent)}
 .status-pill i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
@@ -64,10 +70,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .round-btn{width:32px;height:32px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);font-size:13px;font-weight:750}
 .round-btn:hover{border-color:var(--accent);color:var(--text)}
 
-.view{display:none;padding:24px 36px 80px;max-width:1600px;margin:auto}
+.view{display:none;padding:16px 36px 80px;max-width:1600px;margin:auto}
 .view.active{display:block}
 
-.demo-banner{background:#1f150d;border:1px solid #452b15;border-radius:12px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:12px;color:#d8c7b8;margin-bottom:24px}
+.demo-banner{background:#1A1C1E;border:1px solid var(--accent);border-radius:12px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:12px;color:#d8c7b8;margin-bottom:24px}
 .demo-banner strong{font-weight:800;color:var(--gold)}
 .text-button{border:0;background:none;color:var(--gold);text-decoration:underline;font-size:12px;font-weight:750;white-space:nowrap}
 
@@ -92,9 +98,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
 .quick{border:1px solid var(--line);border-radius:14px;background:var(--panel);display:flex;align-items:center;gap:12px;padding:15px 16px;text-align:left;transition:transform .2s var(--ease),border-color .2s}
-.quick:hover{transform:translateY(-2px);border-color:#593920}
+.quick:hover{transform:translateY(-2px);border-color:var(--accent)}
 .quick:active{transform:scale(.98)}
-.quick-icon{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:16px;font-weight:700}
+.quick-icon{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:10px;background:#1A1C1E;border:1px solid var(--accent);color:var(--accent);font-size:16px;font-weight:700}
 .quick-copy{min-width:0}
 .quick-copy strong{display:block;font-size:13px;font-weight:750;color:var(--text)}
 .quick-copy small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
@@ -102,7 +108,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .metric{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between}
-.metric.primary{border-color:#593315;background:linear-gradient(180deg,#1f150d 0%,#18110b 100%)}
 .metric-top{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:12px;color:#b8a696;font-weight:650}
 .metric-top span:last-child{font-size:14px;color:var(--accent)}
 .metric-value{font-size:clamp(24px,2.3vw,32px);font-weight:850;letter-spacing:-1px;color:var(--gold);white-space:nowrap;margin:10px 0 6px}
@@ -119,7 +124,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .chart:before{top:18px}
 .chart:after{top:52%}
 .chart-col{height:100%;display:flex;flex:1;align-items:center;flex-direction:column;justify-content:flex-end;position:relative;min-width:0;z-index:1}
-.chart-bar{width:min(38px,68%);min-height:3px;border-radius:6px 6px 2px 2px;background:#332419;transition:height .4s var(--ease);position:relative}
+.chart-bar{width:min(38px,68%);min-height:3px;border-radius:6px 6px 2px 2px;background:#333333;transition:height .4s var(--ease);position:relative}
 .chart-bar.yellow{background:var(--accent)}
 .chart-bar.negative{background:var(--danger)}
 .chart-label{position:absolute;top:calc(100% + 9px);font-size:10px;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;text-align:center}
@@ -170,7 +175,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .client-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:left;color:var(--text);transition:border-color .2s}
 .client-card:hover{border-color:var(--accent)}
 .client-card-top{display:flex;align-items:center;gap:12px}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:14px}
+.avatar{width:40px;height:40px;border-radius:50%;background:#1A1C1E;border:1px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:14px}
 .client-card strong{display:block;font-size:14px}
 .client-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
 .client-card .arrow-end{margin-left:auto;font-size:18px;color:var(--gold)}
@@ -180,7 +185,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .record-tabs{margin-bottom:16px}
 .records-panel{padding:22px}
-.small-add,.stock-actions button{background:var(--accent-soft);color:var(--gold);border:1px solid #4d2c14;border-radius:99px;padding:8px 14px;font-size:11px;font-weight:750}
+.small-add,.stock-actions button{background:#1A1C1E;color:var(--gold);border:1px solid var(--accent);border-radius:99px;padding:8px 14px;font-size:11px;font-weight:750}
 .record-row{display:grid;grid-template-columns:90px minmax(140px,1fr) minmax(100px,1.1fr) 105px auto;align-items:center;gap:14px;border-bottom:1px solid var(--line-soft);padding:14px 0}
 .record-row:last-child{border:0}
 .record-row time{font-size:11px;color:var(--muted)}
@@ -193,7 +198,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .stock-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .stock-card{background:var(--panel);color:var(--text);padding:24px;border-radius:18px;border:1px solid var(--line);position:relative;overflow:hidden}
-.stock-card:nth-child(2){background:linear-gradient(145deg,#21160d,#18110b);border-color:#523015}
+.stock-card:nth-child(2){background:#1A1C1E;border-color:var(--accent)}
 .stock-card h3{font-size:20px;margin:8px 0 10px}
 .stock-card strong{font-size:46px;letter-spacing:-2px;line-height:1;color:var(--gold);font-weight:850}
 .stock-card small{font-size:11px;color:var(--muted);margin-left:8px}
@@ -201,7 +206,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .stock-explain{margin-bottom:16px}
 .stock-explain p,.daily-flow p,.report-note{color:var(--muted);line-height:1.6;font-size:12px;margin:10px 0 0}
 .stock-explain strong{color:var(--text)}
-.warning{padding:12px;background:#3a2410;border:1px solid #6b421b;border-radius:10px;color:#ffd89a;font-size:11px;margin-top:10px}
+.warning{padding:12px;background:#1A1C1E;border:1px solid var(--gold);border-radius:10px;color:#ffd89a;font-size:11px;margin-top:10px}
 
 .daily-flow{margin-top:14px}
 .daily-flow #flow-date{font-size:11px;color:var(--muted)}
@@ -216,7 +221,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
 
 dialog{border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--text);box-shadow:0 30px 90px #000c;width:min(540px,calc(100% - 24px));max-height:min(90vh,840px);padding:24px;overflow:auto}
-dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
+dialog::backdrop{background:rgba(26,28,30,0.8);backdrop-filter:blur(4px)}
 .dialog-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
 .dialog-head h2{font-size:22px;letter-spacing:-.6px;margin:6px 0 18px}
 .icon-close{border:1px solid var(--line);background:var(--panel-alt);color:var(--text);width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1}
@@ -224,11 +229,11 @@ dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;min-width:0}
 .field.full{grid-column:1/-1}
 .field label{font-size:11px;font-weight:700;color:#d5c5b7}
-.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#100b07;color:var(--text);font-size:13px;min-height:40px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#1A1C1E;color:var(--text);font-size:13px;min-height:40px}
 .field input::placeholder{color:#6e5d4f}
 .field-help{font-size:10px;color:var(--muted);line-height:1.4}
 .form-section{font-size:10px;letter-spacing:1px;font-weight:800;color:var(--gold);border-top:1px solid var(--line-soft);padding-top:15px;margin:10px 0 14px}
-.form-total{border-radius:11px;background:var(--accent-soft);border:1px solid #4d2c14;color:var(--gold);padding:12px 14px;font-size:12px;font-weight:750;margin-top:6px;display:none}
+.form-total{border-radius:11px;background:#1A1C1E;border:1px solid var(--accent);color:var(--gold);padding:12px 14px;font-size:12px;font-weight:750;margin-top:6px;display:none}
 .form-total.visible{display:block}
 .form-error{color:var(--danger);font-size:11px;min-height:18px;margin-top:8px}
 .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
@@ -250,21 +255,26 @@ dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
 .sync-box p{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 12px}
 .backup-row{display:flex;gap:8px;flex-wrap:wrap}
 .backup-row button{flex:1}
+.pdf-btn{border:0;background:var(--ok);color:#081b0f;border-radius:99px;padding:11px 18px;font-size:12px;font-weight:750;min-height:40px;width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .18s,filter .18s}
+.pdf-btn:hover{filter:brightness(1.08);transform:scale(1.01)}
+.pdf-btn:active{transform:scale(.98)}
 
-#toast{position:fixed;z-index:30;right:24px;bottom:24px;background:#26170c;border:1px solid var(--accent);color:#fff;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:650;opacity:0;pointer-events:none;transform:translateY(12px);transition:all .25s}
+#toast{position:fixed;z-index:30;right:24px;bottom:24px;background:#1A1C1E;border:1px solid var(--accent);color:#fff;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:650;opacity:0;pointer-events:none;transform:translateY(12px);transition:all .25s}
 #toast.show{opacity:1;transform:translateY(0)}
 .mobile-nav{display:none}
 
 @media(max-width:1150px){
   .sidebar{width:210px}
-  .topbar,.view{padding-left:24px;padding-right:24px}
+  .topbar,.today-bar,.view{padding-left:24px;padding-right:24px}
   .metrics,.quick-row{grid-template-columns:repeat(2,1fr)}
   .dash-grid{grid-template-columns:1fr}
 }
 @media(max-width:850px){
   .sidebar{display:none}
-  .topbar{height:58px;padding:0 18px}
-  .view{padding:18px 18px 96px}
+  .topbar{height:auto;min-height:90px;display:flex;align-items:center;padding:8px 18px;gap:12px}
+  .topbar-logo{display:block;height:80px;width:auto;max-height:none;max-width:none;flex-shrink:0}
+  .today-bar{padding:12px 18px 0;font-size:11px}
+  .view{padding:14px 18px 96px}
   .mobile-nav{display:flex;position:fixed;z-index:20;bottom:0;left:0;right:0;background:var(--sidebar);border-top:1px solid var(--line);color:var(--muted);justify-content:space-around;padding:8px 5px max(8px,env(safe-area-inset-bottom))}
   .mobile-nav button{border:0;background:none;color:inherit;font-size:10px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:55px;padding:4px 2px}
   .mobile-nav button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2}
@@ -288,10 +298,9 @@ dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
 <div class="app">
 <aside class="sidebar" aria-label="Navegação principal">
  <div class="identity">
-  <span class="identity-mark" aria-hidden="true">
-   <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
-  </span>
-  <span>minha<span class="identity-line">distribuidora.</span></span>
+  <div class="identity-mark">
+   <img src="https://i.postimg.cc/YCkjmn4x/Gemini-Generated-Image-2l0g8c2l0g8c2l0g-(1).png" alt="Logo Distribuidora">
+  </div>
  </div>
  <div class="workspace-label">MENU</div>
  <nav class="side-nav">
@@ -312,12 +321,15 @@ dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
 
 <div class="main-column">
 <header class="topbar">
- <div class="top-left"><strong id="today-label"></strong></div>
+ <div class="top-left">
+  <img class="topbar-logo" src="https://i.postimg.cc/YCkjmn4x/Gemini-Generated-Image-2l0g8c2l0g8c2l0g-(1).png" alt="Logo Distribuidora">
+ </div>
  <div class="top-actions">
   <button class="status-pill" id="top-storage-btn" type="button"><i id="top-storage-dot"></i><span id="top-storage-text">Operação local</span></button>
   <button class="round-btn" id="info-button" aria-label="Sobre esta plataforma">?</button>
  </div>
 </header>
+<div class="today-bar"><span id="today-label"></span></div>
 
 <main>
  <section class="view active" id="view-painel" aria-label="Painel geral">
@@ -568,6 +580,7 @@ dialog::backdrop{background:#050302cc;backdrop-filter:blur(4px)}
    <button type="button" class="secondary-btn" id="backup-import-btn">⬆ Carregar backup</button>
    <input type="file" id="backup-file" accept=".json,application/json" hidden>
   </div>
+  <button type="button" class="pdf-btn" id="pdf-export">📄 Baixar Relatório (PDF)</button>
  </div>
 </dialog>
 
@@ -866,7 +879,7 @@ function render(){
 
  const s=summary(ui.period,ui.anchor);
  $('#metrics').innerHTML=
-  metricCard('Faturamento Total',s.revenue,trend('revenue',ui.period,ui.anchor),true,'↗')+
+  metricCard('Faturamento Total',s.revenue,trend('revenue',ui.period,ui.anchor),false,'↗')+
   metricCard('Recebido de Clientes',s.received,`${s.salesCount} venda${s.salesCount===1?'':'s'} no período`,false,'✓')+
   metricCard('Gastos de Rua',s.operating,'Alimentação, diesel e outros',false,'−')+
   metricCard('Resultado Estimado',s.profit,'Após custo da água, gastos e perdas',false,'✳');
@@ -1122,6 +1135,607 @@ function setUpEvents(){
   ev.target.value='';
  };
 
+ const exportPDF=async()=>{
+  toast('Gerando relatório gerencial em PDF...');
+
+  try{
+   if(typeof html2pdf==='undefined'){
+    throw new Error('Biblioteca html2pdf não carregada');
+   }
+
+   // 1. Sincronia rigorosa com a Data Base e o Período ativos na tela (SEM new Date())
+   const periodInput=$('#period-date');
+   const activeAnchor=(periodInput&&periodInput.value)?periodInput.value:ui.anchor;
+   ui.anchor=activeAnchor;
+   const activePeriodBtn=document.querySelector('[data-period].active');
+   const activePeriod=(activePeriodBtn&&activePeriodBtn.dataset.period)?activePeriodBtn.dataset.period:(ui.period||'mes');
+   ui.period=activePeriod;
+
+   const anchor=ui.anchor;
+   const period=ui.period;
+
+   // Lê o texto exato do DOM que mostra o período selecionado
+   const domPeriodEl=$('#period-name');
+   const domPeriodText=(domPeriodEl&&domPeriodEl.textContent)?domPeriodEl.textContent.trim():'';
+
+   // 2. Lê os números oficiais calculados a partir da Data Base ativa
+   const s=summary(period,anchor);
+   const pStart=startOf(period,anchor);
+   const pEnd=endOf(period,anchor);
+   const periodStart=fmtDate(pStart);
+   const periodEnd=fmtDate(pEnd);
+   const formattedAnchor=fmtDate(anchor);
+
+   // 3. Título Dinâmico derivado da Data Base / Período selecionado (SEM new Date())
+   let dynamicPeriodText='';
+   if(period==='dia'){
+    dynamicPeriodText=`Período: Dia ${formattedAnchor}`;
+   }else if(period==='semana'){
+    dynamicPeriodText=`Período: Semana de ${periodStart} a ${periodEnd}`;
+   }else if(period==='mes'){
+    const parts=anchor.split('-');
+    const ano=parts[0]||'2026';
+    const mesNum=parseInt(parts[1]||'1',10);
+    const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const nomeMes=meses[mesNum-1]||'Mês';
+    dynamicPeriodText=`Período: Mês de ${nomeMes}/${ano}`;
+   }else if(period==='ano'){
+    const ano=anchor.split('-')[0]||'2026';
+    dynamicPeriodText=`Período: Ano de ${ano}`;
+   }else{
+    dynamicPeriodText=`Período: ${domPeriodText||formattedAnchor}`;
+   }
+
+   // 4. Nome do arquivo gerado a partir da Data Base ativa (SEM new Date())
+   let filePeriodSlug='';
+   if(period==='dia'){
+    filePeriodSlug=anchor;
+   }else if(period==='mes'){
+    filePeriodSlug=anchor.slice(0,7);
+   }else if(period==='ano'){
+    filePeriodSlug=anchor.split('-')[0];
+   }else{
+    filePeriodSlug=`${periodStart}_a_${periodEnd}`.replace(/\//g,'-');
+   }
+   const pdfFileName=`Relatorio_Distribuidora_${filePeriodSlug}.pdf`;
+
+   const periodTypeLabel={
+    dia:'Diário (Dia)',
+    semana:'Semanal (Semana)',
+    mes:'Mensal (Mês)',
+    ano:'Anual (Ano)'
+   }[period]||period.toUpperCase();
+
+   const inP=x=>inRange(x.date,period,anchor);
+   const salesList=data.sales.filter(inP).sort((a,b)=>a.date.localeCompare(b.date));
+   const expensesList=data.expenses.filter(inP).sort((a,b)=>a.date.localeCompare(b.date));
+   const paymentsList=data.payments.filter(inP).sort((a,b)=>a.date.localeCompare(b.date));
+
+   // Agrupamento: Resumo de Compras por Cliente no Período Selecionado
+   const clientSummaryMap={};
+   for(const sale of salesList){
+    const cid=sale.clientId;
+    if(!clientSummaryMap[cid]){
+     clientSummaryMap[cid]={
+      clientId:cid,
+      name:clientName(cid),
+      qtyCrystal:0,
+      qtyIaia:0,
+      totalQty:0,
+      totalVal:0,
+      totalPaid:0,
+      salesCount:0
+     };
+    }
+    const qC=Number(sale.qtyCrystal)||0;
+    const qI=Number(sale.qtyIaia)||0;
+    const v=saleTotal(sale);
+    const p=Number(sale.paidNow)||0;
+    clientSummaryMap[cid].qtyCrystal+=qC;
+    clientSummaryMap[cid].qtyIaia+=qI;
+    clientSummaryMap[cid].totalQty+=(qC+qI);
+    clientSummaryMap[cid].totalVal+=v;
+    clientSummaryMap[cid].totalPaid+=p;
+    clientSummaryMap[cid].salesCount+=1;
+   }
+   const clientSummaryList=Object.values(clientSummaryMap).sort((a,b)=>b.totalVal-a.totalVal);
+   const clientSumQtyCrystal=clientSummaryList.reduce((acc,c)=>acc+c.qtyCrystal,0);
+   const clientSumQtyIaia=clientSummaryList.reduce((acc,c)=>acc+c.qtyIaia,0);
+   const clientSumTotalQty=clientSumQtyCrystal+clientSumQtyIaia;
+   const clientSumTotalVal=s.revenue;
+
+   const debtors=data.clients
+    .map(c=>({client:c,due:dueClient(c.id)}))
+    .filter(x=>x.due>0.01)
+    .sort((a,b)=>b.due-a.due);
+   const totalDebtors=round(debtors.reduce((a,x)=>a+x.due,0));
+
+   const openNotes=data.loads
+    .map(l=>({load:l,due:dueLoad(l.id)}))
+    .filter(x=>x.due>0.01)
+    .sort((a,b)=>b.due-a.due);
+   const totalOpenNotes=round(openNotes.reduce((a,x)=>a+x.due,0));
+
+   const stock=stockAt(anchor);
+   const loanCrystal=data.clients.reduce((a,c)=>a+(Number(c.loanCrystal)||0),0);
+   const loanIaia=data.clients.reduce((a,c)=>a+(Number(c.loanIaia)||0),0);
+
+   const totalSalesQtyCrystal=salesList.reduce((a,s)=>a+(Number(s.qtyCrystal)||0),0);
+   const totalSalesQtyIaia=salesList.reduce((a,s)=>a+(Number(s.qtyIaia)||0),0);
+   const totalSalesVal=s.revenue;
+   const totalExpensesVal=s.operating;
+   const totalSalesPaid=round(salesList.reduce((a,s)=>a+num(s.paidNow),0));
+   const totalPaymentsVal=round(paymentsList.reduce((a,p)=>a+num(p.amount),0));
+   const totalSalesPending=round(salesList.reduce((a,s)=>a+Math.max(0,saleTotal(s)-num(s.paidNow)),0));
+
+   const dataBase=anchor;
+   const tableStyle='width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; margin: 6px 0 12px;';
+   const thStyle='padding: 6px; border: 1px solid #ccc; background: #f8f9fa; font-weight: 700; text-align: left;';
+   const thRightStyle='padding: 6px; border: 1px solid #ccc; background: #f8f9fa; font-weight: 700; text-align: right;';
+   const tdStyle='padding: 6px; border: 1px solid #ccc; text-align: left;';
+   const tdRightStyle='padding: 6px; border: 1px solid #ccc; text-align: right; white-space: nowrap;';
+   const tdTotalStyle='padding: 6px; border: 1px solid #ccc; background: #f1f5f9; font-weight: 700; text-align: left;';
+   const tdTotalRightStyle='padding: 6px; border: 1px solid #ccc; background: #f1f5f9; font-weight: 700; text-align: right; white-space: nowrap;';
+   const secHeadStyle='font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 6px; padding-bottom: 3px; border-bottom: 2px solid #ea6812; display: flex; justify-content: space-between; align-items: baseline;';
+
+   const relatorioHTML=`
+    <div style="font-family: Arial, Helvetica, sans-serif; color: #000000; background: #ffffff; padding: 15px; line-height: 1.35;">
+    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px;">
+     <img src="https://i.postimg.cc/YCkjmn4x/Gemini-Generated-Image-2l0g8c2l0g8c2l0g-(1).png" alt="Logo Distribuidora" style="max-height: 70px; width: auto; margin-bottom: 15px; display: block;">
+     <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+      <div>
+       <div style="font-size: 13px; font-weight: 800; color: #ea6812; text-transform: uppercase; letter-spacing: 0.5px;">Distribuidora Principal</div>
+       <h1 style="margin: 2px 0 0; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Extrato Gerencial e Operacional</h1>
+       <div style="font-size: 12px; font-weight: 800; color: #ea6812; margin-top: 3px;">${esc(dynamicPeriodText)}</div>
+      </div>
+      <div style="text-align: right; font-size: 9px; color: #475569; flex: none; line-height: 1.4;">
+       <div><strong>Data Base:</strong> ${formattedAnchor}</div>
+       <div><strong>Período Ativo:</strong> ${esc(domPeriodText || formattedAnchor)}</div>
+       <div><strong>Status:</strong> Relatório Oficial do Sistema</div>
+      </div>
+     </div>
+
+     <div style="margin-top: 10px; padding: 7px 10px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+      <div>
+       <span style="display: inline-block; background: #ea6812; color: #ffffff; font-weight: 800; font-size: 9.5px; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; margin-right: 8px;">${esc(dynamicPeriodText)}</span>
+       <span style="font-size: 10px; color: #64748b;">(De ${periodStart} até ${periodEnd})</span>
+      </div>
+      <div style="font-size: 9.5px; color: #334155;">
+       <strong>Data Base Selecionada:</strong> <span style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px; font-weight: 700;">${formattedAnchor}</span>
+      </div>
+     </div>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+     <div style="${secHeadStyle}">
+      <span>1. Resumo Financeiro (Cards do Painel)</span>
+      <span style="font-size: 9px; font-weight: normal; color: #64748b; text-transform: none;">Totais idênticos aos da tela</span>
+     </div>
+
+     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 10px;">
+      <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; box-sizing: border-box;">
+       <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Faturamento Total</div>
+       <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">${money(s.revenue)}</div>
+       <div style="font-size: 7.5px; color: #94a3b8; margin-top: 1px;">${salesList.length} venda(s) no período</div>
+      </div>
+      <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 6px; padding: 6px 8px; box-sizing: border-box;">
+       <div style="font-size: 8.5px; font-weight: 700; color: #166534; text-transform: uppercase;">Recebido de Clientes</div>
+       <div style="font-size: 13px; font-weight: 800; color: #15803d; margin-top: 2px;">${money(s.received)}</div>
+       <div style="font-size: 7.5px; color: #16a34a; margin-top: 1px;">À vista + quitações</div>
+      </div>
+      <div style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 6px; padding: 6px 8px; box-sizing: border-box;">
+       <div style="font-size: 8.5px; font-weight: 700; color: #991b1b; text-transform: uppercase;">Gastos de Rua</div>
+       <div style="font-size: 13px; font-weight: 800; color: #b91c1c; margin-top: 2px;">${money(s.operating)}</div>
+       <div style="font-size: 7.5px; color: #dc2626; margin-top: 1px;">${expensesList.length} despesa(s) no período</div>
+      </div>
+      <div style="background: #fafaf9; border: 1.5px solid #d6d3d1; border-radius: 6px; padding: 6px 8px; box-sizing: border-box;">
+       <div style="font-size: 8.5px; font-weight: 700; color: #44403c; text-transform: uppercase;">Resultado Estimado</div>
+       <div style="font-size: 13px; font-weight: 800; color: ${s.profit>=0?'#15803d':'#b91c1c'}; margin-top: 2px;">${money(s.profit)}</div>
+       <div style="font-size: 7.5px; color: #78716c; margin-top: 1px;">Lucro líquido estimado</div>
+      </div>
+     </div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 32%;">
+       <col style="width: 44%;">
+       <col style="width: 24%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Indicador</th>
+        <th style="${thStyle}">Descrição</th>
+        <th style="${thRightStyle}">Valor</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td style="${tdStyle}"><strong>Total Faturado</strong></td>
+        <td style="${tdStyle}">${salesList.length} venda(s) realizada(s) no período selecionado</td>
+        <td style="${tdRightStyle} font-weight: 700; color: #0f172a;">${money(s.revenue)}</td>
+       </tr>
+       <tr>
+        <td style="${tdStyle}"><strong>Recebido de Clientes</strong></td>
+        <td style="${tdStyle}">Valores recebidos à vista e quitações parciais</td>
+        <td style="${tdRightStyle} font-weight: 700; color: #15803d;">${money(s.received)}</td>
+       </tr>
+       <tr>
+        <td style="${tdStyle}"><strong>Gastos de Rua / Operacionais</strong></td>
+        <td style="${tdStyle}">Combustível (diesel), alimentação e despesas diárias</td>
+        <td style="${tdRightStyle} font-weight: 700; color: #b91c1c;">- ${money(s.operating)}</td>
+       </tr>
+       <tr>
+        <td style="${tdStyle}"><strong>Custo da Água Vendida (CMV)</strong></td>
+        <td style="${tdStyle}">Custo de aquisição na fonte dos garrafões entregues</td>
+        <td style="${tdRightStyle} color: #64748b;">- ${money(s.costSold)}</td>
+       </tr>
+       <tr>
+        <td style="${tdTotalStyle}">SALDO FINAL ESTIMADO (LUCRO LÍQUIDO)</td>
+        <td style="${tdTotalStyle}">Faturamento (-) Custo da água (-) Gastos (-) Perdas</td>
+        <td style="${tdTotalRightStyle} font-size: 11px; color: ${s.profit>=0?'#15803d':'#b91c1c'};">${money(s.profit)}</td>
+       </tr>
+       <tr>
+        <td style="${tdStyle}"><strong>Saldo de Caixa Realizado</strong></td>
+        <td style="${tdStyle}">Recebido (-) Gastos (-) Pagamentos a fornecedor</td>
+        <td style="${tdRightStyle} font-weight: 700; color: ${s.cash>=0?'#15803d':'#b91c1c'};">${money(s.cash)}</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+
+    <div style="margin-bottom: 12px; page-break-inside: avoid;">
+     <div style="${secHeadStyle}">
+      <span>2. Resumo de Compras por Cliente</span>
+      <span style="font-size: 9px; font-weight: normal; color: #64748b; text-transform: none;">Volume consolidado no período</span>
+     </div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 32%;">
+       <col style="width: 15%;">
+       <col style="width: 15%;">
+       <col style="width: 16%;">
+       <col style="width: 22%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Cliente</th>
+        <th style="${thRightStyle}">Crystal 20L</th>
+        <th style="${thRightStyle}">Iaiá 20L</th>
+        <th style="${thRightStyle}">Total Garrafões</th>
+        <th style="${thRightStyle}">Valor Comprado</th>
+       </tr>
+      </thead>
+      <tbody>
+       ${clientSummaryList.length?clientSummaryList.map(c=>`
+        <tr>
+         <td style="${tdStyle}"><strong>${esc(c.name)}</strong> <span style="font-size: 8px; color: #64748b;">(${c.salesCount} pedido${c.salesCount>1?'s':''})</span></td>
+         <td style="${tdRightStyle}">${c.qtyCrystal} un</td>
+         <td style="${tdRightStyle}">${c.qtyIaia} un</td>
+         <td style="${tdRightStyle}; font-weight: 700;">${c.totalQty} un</td>
+         <td style="${tdRightStyle}; font-weight: 700; color: #0f172a;">${money(c.totalVal)}</td>
+        </tr>
+       `).join(''):`
+        <tr>
+         <td colspan="5" style="${tdStyle}; text-align: center; color: #94a3b8; font-style: italic;">Nenhuma compra de cliente registrada no período selecionado.</td>
+        </tr>
+       `}
+      </tbody>
+      ${clientSummaryList.length?`
+       <tfoot>
+        <tr>
+         <td style="${tdTotalStyle}">Total dos Clientes (${clientSummaryList.length})</td>
+         <td style="${tdTotalRightStyle}">${clientSumQtyCrystal} un</td>
+         <td style="${tdTotalRightStyle}">${clientSumQtyIaia} un</td>
+         <td style="${tdTotalRightStyle}">${clientSumTotalQty} un</td>
+         <td style="${tdTotalRightStyle}; color: #0f172a;">${money(clientSumTotalVal)}</td>
+        </tr>
+       </tfoot>
+      `:''}
+     </table>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+     <div style="${secHeadStyle}">
+      <span>3. Movimentações Detalhadas do Período</span>
+      <span style="font-size: 9px; font-weight: normal; color: #64748b; text-transform: none;">Extrato cronológico analítico</span>
+     </div>
+
+     <div style="font-weight: 700; font-size: 10px; margin: 6px 0 3px; color: #334155;">Vendas Realizadas no Período:</div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 10%;">
+       <col style="width: 28%;">
+       <col style="width: 20%;">
+       <col style="width: 14%;">
+       <col style="width: 14%;">
+       <col style="width: 14%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Data</th>
+        <th style="${thStyle}">Cliente</th>
+        <th style="${thStyle}">Quantidade</th>
+        <th style="${thRightStyle}">Valor Total</th>
+        <th style="${thRightStyle}">Recebido</th>
+        <th style="${thRightStyle}">A Receber</th>
+       </tr>
+      </thead>
+      <tbody>
+       ${salesList.length?salesList.map(item=>{
+        const total=saleTotal(item);
+        const paid=Number(item.paidNow)||0;
+        const due=Math.max(0,total-paid);
+        return `
+         <tr>
+          <td style="${tdStyle}">${fmtShort(item.date)}</td>
+          <td style="${tdStyle}"><strong>${esc(clientName(item.clientId))}</strong></td>
+          <td style="${tdStyle}">${item.qtyCrystal||0} Crystal · ${item.qtyIaia||0} Iaiá</td>
+          <td style="${tdRightStyle}">${money(total)}</td>
+          <td style="${tdRightStyle}; color: #15803d;">${money(paid)}</td>
+          <td style="${tdRightStyle}; color: ${due>0?'#b91c1c':'#64748b'}; font-weight: ${due>0?'700':'normal'};">${money(due)}</td>
+         </tr>
+        `;
+       }).join(''):`
+        <tr>
+         <td colspan="6" style="${tdStyle}; text-align: center; color: #94a3b8; font-style: italic;">Nenhuma venda registrada no período selecionado.</td>
+        </tr>
+       `}
+      </tbody>
+      ${salesList.length?`
+       <tfoot>
+        <tr>
+         <td colspan="2" style="${tdTotalStyle}">Total de Vendas (${salesList.length})</td>
+         <td style="${tdTotalStyle}">${totalSalesQtyCrystal} Crystal · ${totalSalesQtyIaia} Iaiá</td>
+         <td style="${tdTotalRightStyle}">${money(totalSalesVal)}</td>
+         <td style="${tdTotalRightStyle}; color: #15803d;">${money(totalSalesPaid)}</td>
+         <td style="${tdTotalRightStyle}; color: ${totalSalesPending>0?'#b91c1c':'#0f172a'};">${money(totalSalesPending)}</td>
+        </tr>
+       </tfoot>
+      `:''}
+     </table>
+
+     <div style="font-weight: 700; font-size: 10px; margin: 10px 0 3px; color: #334155;">Gastos e Despesas Operacionais:</div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 12%;">
+       <col style="width: 22%;">
+       <col style="width: 46%;">
+       <col style="width: 20%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Data</th>
+        <th style="${thStyle}">Categoria</th>
+        <th style="${thStyle}">Observação / Motivo</th>
+        <th style="${thRightStyle}">Valor</th>
+       </tr>
+      </thead>
+      <tbody>
+       ${expensesList.length?expensesList.map(e=>`
+        <tr>
+         <td style="${tdStyle}">${fmtShort(e.date)}</td>
+         <td style="${tdStyle}"><strong>${esc(e.category)}</strong></td>
+         <td style="${tdStyle}">${esc(e.note||'-')}</td>
+         <td style="${tdRightStyle}; font-weight: 700; color: #b91c1c;">- ${money(e.amount)}</td>
+        </tr>
+       `).join(''):`
+        <tr>
+         <td colspan="4" style="${tdStyle}; text-align: center; color: #94a3b8; font-style: italic;">Nenhum gasto registrado no período selecionado.</td>
+        </tr>
+       `}
+      </tbody>
+      ${expensesList.length?`
+       <tfoot>
+        <tr>
+         <td colspan="3" style="${tdTotalStyle}">Total de Gastos (${expensesList.length})</td>
+         <td style="${tdTotalRightStyle}; color: #b91c1c;">- ${money(totalExpensesVal)}</td>
+        </tr>
+       </tfoot>
+      `:''}
+     </table>
+
+     ${paymentsList.length?`
+      <div style="font-weight: 700; font-size: 10px; margin: 10px 0 3px; color: #334155;">Recebimentos Avulsos (Abatimento de Dívidas):</div>
+      <table style="${tableStyle}">
+       <colgroup>
+        <col style="width: 12%;">
+        <col style="width: 38%;">
+        <col style="width: 30%;">
+        <col style="width: 20%;">
+       </colgroup>
+       <thead>
+        <tr>
+         <th style="${thStyle}">Data</th>
+         <th style="${thStyle}">Cliente</th>
+         <th style="${thStyle}">Descrição</th>
+         <th style="${thRightStyle}">Valor</th>
+        </tr>
+       </thead>
+       <tbody>
+        ${paymentsList.map(p=>`
+         <tr>
+          <td style="${tdStyle}">${fmtShort(p.date)}</td>
+          <td style="${tdStyle}"><strong>${esc(clientName(p.clientId))}</strong></td>
+          <td style="${tdStyle}">Quitação de débitos pendentes</td>
+          <td style="${tdRightStyle}; font-weight: 700; color: #15803d;">+ ${money(p.amount)}</td>
+         </tr>
+        `).join('')}
+       </tbody>
+       <tfoot>
+        <tr>
+         <td colspan="3" style="${tdTotalStyle}">Total Recebimentos Avulsos</td>
+         <td style="${tdTotalRightStyle}; color: #15803d;">+ ${money(paymentsList.reduce((a,p)=>a+(Number(p.amount)||0),0))}</td>
+        </tr>
+       </tfoot>
+      </table>
+     `:''}
+
+     <div style="margin-top: 6px; padding: 6px 10px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
+      <span style="font-weight: 700; color: #166534;">Total Recebido de Clientes no Período (Vendas à Vista + Quitações):</span>
+      <strong style="color: #15803d; font-size: 11px;">${money(s.received)}</strong>
+     </div>
+    </div>
+
+    <div style="margin-bottom: 12px; page-break-inside: avoid;">
+     <div style="${secHeadStyle}">
+      <span>4. Posição Atual de Clientes e Notas em Aberto</span>
+      <span style="font-size: 9px; font-weight: normal; color: #64748b; text-transform: none;">Contas a receber e a pagar</span>
+     </div>
+
+     <div style="font-weight: 700; font-size: 10px; margin: 6px 0 3px; color: #334155;">Clientes com Saldo Devedor:</div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 36%;">
+       <col style="width: 18%;">
+       <col style="width: 24%;">
+       <col style="width: 22%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Cliente</th>
+        <th style="${thStyle}">Telefone</th>
+        <th style="${thStyle}">Comodato (Garrafões)</th>
+        <th style="${thRightStyle}">Saldo Devedor</th>
+       </tr>
+      </thead>
+      <tbody>
+       ${debtors.length?debtors.map(d=>`
+        <tr>
+         <td style="${tdStyle}"><strong>${esc(d.client.name)}</strong></td>
+         <td style="${tdStyle}">${esc(d.client.phone||'-')}</td>
+         <td style="${tdStyle}">${d.client.loanCrystal||0} Crystal · ${d.client.loanIaia||0} Iaiá</td>
+         <td style="${tdRightStyle}; font-weight: 700; color: #b91c1c;">${money(d.due)}</td>
+        </tr>
+       `).join(''):`
+        <tr>
+         <td colspan="4" style="${tdStyle}; text-align: center; color: #15803d; font-style: italic;">Nenhum cliente possui saldo devedor pendente.</td>
+        </tr>
+       `}
+      </tbody>
+      ${debtors.length?`
+       <tfoot>
+        <tr>
+         <td colspan="3" style="${tdTotalStyle}">Total a Receber de Clientes</td>
+         <td style="${tdTotalRightStyle}; color: #b91c1c;">${money(totalDebtors)}</td>
+        </tr>
+       </tfoot>
+      `:''}
+     </table>
+
+     <div style="font-weight: 700; font-size: 10px; margin: 10px 0 3px; color: #334155;">Notas da Fonte em Aberto:</div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 18%;">
+       <col style="width: 12%;">
+       <col style="width: 28%;">
+       <col style="width: 20%;">
+       <col style="width: 22%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Nota Fiscal</th>
+        <th style="${thStyle}">Data</th>
+        <th style="${thStyle}">Carga</th>
+        <th style="${thRightStyle}">Total Nota</th>
+        <th style="${thRightStyle}">Saldo em Aberto</th>
+       </tr>
+      </thead>
+      <tbody>
+       ${openNotes.length?openNotes.map(n=>`
+        <tr>
+         <td style="${tdStyle}"><strong>${esc(n.load.invoice||'S/N')}</strong></td>
+         <td style="${tdStyle}">${fmtShort(n.load.date)}</td>
+         <td style="${tdStyle}">${n.load.qtyCrystal||0} Crystal · ${n.load.qtyIaia||0} Iaiá</td>
+         <td style="${tdRightStyle}">${money(loadTotal(n.load))}</td>
+         <td style="${tdRightStyle}; font-weight: 700; color: #b91c1c;">${money(n.due)}</td>
+        </tr>
+       `).join(''):`
+        <tr>
+         <td colspan="5" style="${tdStyle}; text-align: center; color: #15803d; font-style: italic;">Todas as notas de carga da fonte estão quitadas.</td>
+        </tr>
+       `}
+      </tbody>
+      ${openNotes.length?`
+       <tfoot>
+        <tr>
+         <td colspan="4" style="${tdTotalStyle}">Total Pendente com a Fonte</td>
+         <td style="${tdTotalRightStyle}; color: #b91c1c;">${money(totalOpenNotes)}</td>
+        </tr>
+       </tfoot>
+      `:''}
+     </table>
+    </div>
+
+    <div style="margin-bottom: 12px; page-break-inside: avoid;">
+     <div style="${secHeadStyle}">
+      <span>5. Carga e Boia (Saldo Atual no Caminhão)</span>
+      <span style="font-size: 9px; font-weight: normal; color: #64748b; text-transform: none;">Controle de garrafões cheios e comodatos</span>
+     </div>
+     <table style="${tableStyle}">
+      <colgroup>
+       <col style="width: 34%;">
+       <col style="width: 22%;">
+       <col style="width: 22%;">
+       <col style="width: 22%;">
+      </colgroup>
+      <thead>
+       <tr>
+        <th style="${thStyle}">Produto</th>
+        <th style="${thRightStyle}">Cheios no Caminhão (Boia)</th>
+        <th style="${thRightStyle}">Comodato em Clientes</th>
+        <th style="${thRightStyle}">Total em Circulação</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td style="${tdStyle}"><strong>Água Mineral Crystal 20L</strong></td>
+        <td style="${tdRightStyle}; font-weight: 700;">${stock.crystal.toLocaleString('pt-BR')} un</td>
+        <td style="${tdRightStyle}">${loanCrystal.toLocaleString('pt-BR')} un</td>
+        <td style="${tdRightStyle}; font-weight: 700;">${(stock.crystal+loanCrystal).toLocaleString('pt-BR')} un</td>
+       </tr>
+       <tr>
+        <td style="${tdStyle}"><strong>Água Mineral Iaiá 20L</strong></td>
+        <td style="${tdRightStyle}; font-weight: 700;">${stock.iaia.toLocaleString('pt-BR')} un</td>
+        <td style="${tdRightStyle}">${loanIaia.toLocaleString('pt-BR')} un</td>
+        <td style="${tdRightStyle}; font-weight: 700;">${(stock.iaia+loanIaia).toLocaleString('pt-BR')} un</td>
+       </tr>
+      </tbody>
+      <tfoot>
+       <tr>
+        <td style="${tdTotalStyle}">Total Geral de Garrafões</td>
+        <td style="${tdTotalRightStyle}">${(stock.crystal+stock.iaia).toLocaleString('pt-BR')} un</td>
+        <td style="${tdTotalRightStyle}">${(loanCrystal+loanIaia).toLocaleString('pt-BR')} un</td>
+        <td style="${tdTotalRightStyle}">${(stock.crystal+stock.iaia+loanCrystal+loanIaia).toLocaleString('pt-BR')} un</td>
+       </tr>
+      </tfoot>
+     </table>
+    </div>
+
+    <div style="margin-top: 18px; padding-top: 8px; border-top: 1px solid #cbd5e1; font-size: 9px; color: #94a3b8; display: flex; justify-content: space-between;">
+     <span>Minha Distribuidora · Fechamento Operacional e Gerencial</span>
+     <span>Documento emitido eletronicamente para fins de controle interno</span>
+    </div>
+   </div>
+   `;
+
+   const opcoesPDF={
+    margin: 10,
+    filename: `Extrato_${dataBase}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+   };
+
+   await html2pdf().set(opcoesPDF).from(relatorioHTML).save();
+   toast('Relatório PDF gerado com sucesso!');
+  }catch(err){
+   console.error('Erro ao gerar PDF:',err);
+   toast('Não foi possível gerar o PDF.');
+  }
+ };
+ const gerarRelatorioPDF=exportPDF;
+ window.gerarRelatorioPDF=exportPDF;
+ $('#pdf-export').onclick=exportPDF;
+
  $('#period-date').onchange=event=>{if(event.currentTarget.value){ui.anchor=event.currentTarget.value;render()}};
  $('#period-prev').onclick=()=>{ui.anchor=moveAnchor(ui.period,ui.anchor,-1);render()};
  $('#period-next').onclick=()=>{ui.anchor=moveAnchor(ui.period,ui.anchor,1);render()};
@@ -1163,5 +1777,6 @@ updateStorageBadge(false);
 if(cloudEndpoint())pullCloud(true);
 })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
